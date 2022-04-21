@@ -1,0 +1,34 @@
+services:
+  streamable-contents:
+    image: fiubify-streamable-contents:latest
+    build:
+      context: app
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=DEV
+    ports:
+      - "3000:3000"
+    links:
+      - mongodb
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    networks:
+      - node-app-network
+
+  mongodb:
+    image: mongo:latest
+    command: mongod --quiet --logpath /var/log/mongodb/mongod.log
+    ports:
+      - 27017:27017
+    volumes:
+      - data:/data/db
+      - /dev/logs
+    networks:
+      - node-app-network
+
+volumes:
+  data:
+
+networks:
+  node-app-network:
