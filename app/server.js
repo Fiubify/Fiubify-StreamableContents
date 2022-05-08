@@ -1,15 +1,8 @@
-const express = require('express')
-const mongoose = require('mongoose')
+const app = require('./app');
 
-const app = express();
-
-const routes = require('./routes.js')
-app.use('/', routes)
-
-// DB connection
-mongoose.connect('mongodb://mongodb:27017/db', { useNewUrlParser: true }) // Relacionar la URL al entorno
-        .then(() => console.log('MongoDB connected'))
-        .catch(err => console.log(err))
+const PORT = 3000;
 
 // listen
-app.listen(3000);
+app.listen(process.env.PORT || PORT, () => {
+    console.log(`Server listening on port: ${PORT}`)
+});
