@@ -1,4 +1,4 @@
-const apiError = require('../errors/apiError');
+const apiError = require("../errors/apiError");
 
 function errorHandler(err, req, res, _next) {
   if (err instanceof apiError) {
@@ -6,7 +6,7 @@ function errorHandler(err, req, res, _next) {
     return;
   }
 
-  res.status(500).json({ error: { msg: 'Internal error' } });
+  res.status(500).json({ error: { msg: "Internal error" } });
 }
 
 module.exports = errorHandler;

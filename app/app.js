@@ -1,13 +1,13 @@
-const express = require('express');
+const express = require("express");
 
-const songRouter = require('./routes/songRoutes');
+const songRouter = require("./routes/songRoutes");
 
 // Initialize global services
-require('./services/firebase');
-require('./services/db');
+require("./services/firebase");
+require("./services/db");
 
 // Middlewares import
-const errorHandlerMiddleware = require('./middleware/errorHandler');
+const errorHandlerMiddleware = require("./middleware/errorHandler");
 
 const app = express();
 
@@ -16,11 +16,11 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // Routes
-app.use('/songs', songRouter)
+app.use("/songs", songRouter);
 
 // Example route
-app.get('/', (req, res) => {
-    res.send('Initial setup');
+app.get("/", (req, res) => {
+  res.send("Initial setup");
 });
 
 // Error handling middlewares
