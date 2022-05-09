@@ -1,5 +1,11 @@
+const {Readable} = require('stream');
 const Song = require('../models/songModel');
+
 const firebaseStorage = require('../services/firebase').storage
+const firebaseSongsManager = require('../utils/firebaseSongsManager').FirebaseSongsManager;
+
+
+const songsManager = new firebaseSongsManager(firebaseStorage);
 
 const getAllSongsByQuery = async (req, res, next) => {
 }
@@ -9,30 +15,39 @@ const getSongById = async (req, res, next) => {
 }
 
 const createSong = async (req, res, next) => {
-    if(!req.file) {
+    const {title, artistId, albumId, duration} = req.body;
+
+    if (!req.file) {
         res.status(400).send('No file uploaded');
         return;
     }
 
-    console.log(req.file.originalName);
-    const blob = firebaseStorage.file(req.file.originalname);
-    const bloblStream = blob.createWriteStream({
-        metadata: {
-            contentType: req.file.mimetype
+    // Create Song uploader for loading the song to firebase Storage
+    const songUploader = songsManager.createSongUploader(req.file, title, albumId, artistId);
+
+    // Set Up all the events
+    songUploader.setUpErrorEvent((err) => console.log(err));
+    songUploader.setUpFinishEvent(async () => {
+            const newSong = new Song({
+                title: title,
+                artistId: artistId,
+                albumId: albumId,
+                duration: duration,
+                url: songUploader.getFilePublicUrl()
+            });
+
+            const mongoCreatedSong = await newSong.save();
+
+            res.status(200).send({
+                id: mongoCreatedSong.id,
+                fileName: songUploader.getFileName(),
+                fileLocation: songUploader.getFilePublicUrl()
+            });
         }
-    });
-
-    bloblStream.on('error', (err) => console.log(err));
-    bloblStream.on('finish', () => {
-        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${firebaseStorage.name}/o/${encodeURI(blob.name)}?alt=media`;
-
-        res.status(200).send({
-            fileName: req.file.originalname,
-            fileLocation: publicUrl
-        });
-    });
-
-    bloblStream.end(req.file.buffer);
+    );
+    
+    // Set Up the input stream
+    songUploader.setUpInputPipe(Readable.from(req.file.buffer.toString()));
 }
 
 module.exports = {
