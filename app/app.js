@@ -6,6 +6,9 @@ const songRouter = require('./routes/songRoutes');
 require('./services/firebase');
 require('./services/db');
 
+// Middlewares import
+const errorHandlerMiddleware = require('./middleware/errorHandler');
+
 const app = express();
 
 // Middlewares
@@ -19,5 +22,8 @@ app.use('/songs', songRouter)
 app.get('/', (req, res) => {
     res.send('Initial setup');
 });
+
+// Error handling middlewares
+app.use(errorHandlerMiddleware);
 
 module.exports = app;

@@ -1,4 +1,5 @@
 const {Readable} = require('stream');
+const ApiError = require('../errors/apiError')
 const Song = require('../models/songModel');
 
 const firebaseStorage = require('../services/firebase').storage
@@ -26,26 +27,31 @@ const createSong = async (req, res, next) => {
     const songUploader = songsManager.createSongUploader(req.file, title, albumId, artistId);
 
     // Set Up all the events
-    songUploader.setUpErrorEvent((err) => console.log(err));
+    songUploader.setUpErrorEvent((err) => next(ApiError.internalError(err)));
     songUploader.setUpFinishEvent(async () => {
-            const newSong = new Song({
-                title: title,
-                artistId: artistId,
-                albumId: albumId,
-                duration: duration,
-                url: songUploader.getFilePublicUrl()
-            });
+            try {
+                const newSong = new Song({
+                    title: title,
+                    artistId: artistId,
+                    albumId: albumId,
+                    duration: duration,
+                    url: songUploader.getFilePublicUrl()
+                });
 
-            const mongoCreatedSong = await newSong.save();
+                const mongoCreatedSong = await newSong.save();
 
-            res.status(200).send({
-                id: mongoCreatedSong.id,
-                fileName: songUploader.getFileName(),
-                fileLocation: songUploader.getFilePublicUrl()
-            });
+                res.status(200).send({
+                    id: mongoCreatedSong.id,
+                    fileName: songUploader.getFileName(),
+                    fileLocation: songUploader.getFilePublicUrl()
+                });
+            } catch (err) {
+                console.log(err);
+                next(ApiError.invalidArguments(`Invalid arguments passed`));
+            }
         }
     );
-    
+
     // Set Up the input stream
     songUploader.setUpInputPipe(Readable.from(req.file.buffer.toString()));
 }
