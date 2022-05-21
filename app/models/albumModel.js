@@ -17,6 +17,11 @@ const albumSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  tier: {
+    type: String,
+    required: true,
+    default: "Free",
+  },
 });
 
 module.exports = mongoose.model("Album", albumSchema);

@@ -4,6 +4,7 @@ const Song = require("../models/songModel");
 const getAllSongsByQuery = async (req, res, next) => {
   const albumId = req.query.album;
   const artistId = req.query.artist;
+  const genre = req.query.genre;
 
   const query = {};
 
@@ -13,6 +14,10 @@ const getAllSongsByQuery = async (req, res, next) => {
 
   if (albumId) {
     query.albumId = albumId;
+  }
+
+  if (genre) {
+    query.genre = genre;
   }
 
   try {
@@ -38,13 +43,7 @@ const getSongById = async (req, res, next) => {
   }
 
   res.status(200).json({
-    data: {
-      title: requestedSong.title,
-      albumId: requestedSong.albumId,
-      artistId: requestedSong.artistId,
-      url: requestedSong.url,
-      duration: requestedSong.duration,
-    },
+    data: requestedSong,
   });
 };
 

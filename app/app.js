@@ -1,6 +1,7 @@
 const express = require("express");
 
 const songRouter = require("./routes/songRoutes");
+const albumRouter = require("./routes/albumRoutes");
 
 // Initialize global services
 require("./services/firebase");
@@ -17,6 +18,7 @@ app.use(express.urlencoded());
 
 // Routes
 app.use("/songs", songRouter);
+app.use("/albums", albumRouter);
 
 // Example route
 app.get("/", (req, res) => {
