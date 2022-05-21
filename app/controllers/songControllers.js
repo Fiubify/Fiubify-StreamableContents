@@ -1,79 +1,71 @@
 const ApiError = require("../errors/apiError");
 const Song = require("../models/songModel");
+const QueryParser = require('../utils/queryParser');
 
 const getAllSongsByQuery = async (req, res, next) => {
-  const albumId = req.query.album;
-  const artistId = req.query.artist;
-  const genre = req.query.genre;
 
-  const query = {};
+    const queryParams = ['artistId', 'albumId', 'genre']
+    const queryParser = new QueryParser(queryParams);
 
-  if (artistId) {
-    query.artistId = artistId;
-  }
+    const query = queryParser.parseRequest(req);
 
-  if (albumId) {
-    query.albumId = albumId;
-  }
+    try {
+        const filteredSongs = await Song.find(query).select("-_id");
+        if (!filteredSongs.length) {
+            const message = queryParser.getErrorMessageNotFound(req)
+            next(ApiError.resourceNotFound(message));
+        } else {
+            res.status(200).json({
+                data: filteredSongs,
+            });
+        }
 
-  if (genre) {
-    query.genre = genre;
-  }
-
-  try {
-    const filteredSongs = await Song.find(query).select("-_id");
-
-    res.status(200).json({
-      data: filteredSongs,
-    });
-  } catch (err) {
-    console.log(err);
-    next(ApiError.internalError("Internal error when getting songs"));
-  }
+    } catch (err) {
+        next(ApiError.internalError("Internal error when getting songs"));
+    }
 };
 
 const getSongById = async (req, res, next) => {
-  const songId = req.params.id;
+    const songId = req.params.id;
 
-  const requestedSong = await Song.findById(songId);
+    const requestedSong = await Song.findById(songId).select("-_id -__v");
 
-  if (requestedSong == null) {
-    next(ApiError.resourceNotFound(`Song with id ${songId} doesn't exists`));
-    return;
-  }
+    if (requestedSong == null) {
+        next(ApiError.resourceNotFound(`Song with id ${songId} doesn't exists`));
+        return;
+    }
 
-  res.status(200).json({
-    data: requestedSong,
-  });
+    res.status(200).json({
+        data: requestedSong,
+    });
 };
 
 const createSong = async (req, res, next) => {
-  const { title, artistId, albumId, duration, url, tier, genre, description } =
-    req.body;
-  try {
-    const newSong = new Song({
-      title: title,
-      artistId: artistId,
-      albumId: albumId,
-      duration: duration,
-      url: url,
-      tier: tier,
-      genre: genre,
-      description: description,
-    });
+    const {title, artistId, albumId, duration, url, tier, genre, description} =
+        req.body;
+    try {
+        const newSong = new Song({
+            title: title,
+            artistId: artistId,
+            albumId: albumId,
+            duration: duration,
+            url: url,
+            tier: tier,
+            genre: genre,
+            description: description,
+        });
 
-    await newSong.save();
+        await newSong.save();
 
-    res.status(201).send({});
-  } catch (err) {
-    console.log(err);
-    next(ApiError.invalidArguments(`Invalid arguments passed`));
-    return;
-  }
+        res.status(201).send({});
+    } catch (err) {
+        next(ApiError.invalidArguments(`Invalid arguments passed`));
+        return;
+    }
 };
 
 module.exports = {
-  getAllSongsByQuery,
-  getSongById,
-  createSong,
+    getAllSongsByQuery,
+    getSongById,
+    createSong,
 };

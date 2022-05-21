@@ -8,6 +8,8 @@ services:
         - NODE_ENV=DEV
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=DEV
     links:
       - mongodb
     volumes:

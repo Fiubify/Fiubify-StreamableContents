@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "@types/mongoose": "^5.11.97",
-    "prettier": "2.6.2"
-  }
-}

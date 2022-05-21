@@ -4,7 +4,6 @@ const songRouter = require("./routes/songRoutes");
 const albumRouter = require("./routes/albumRoutes");
 
 // Initialize global services
-require("./services/firebase");
 require("./services/db");
 
 // Middlewares import

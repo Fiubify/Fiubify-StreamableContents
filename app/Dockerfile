@@ -11,7 +11,7 @@ COPY package*.json ./
 COPY . .
 
 # Install the packages
-RUN if [ $NODE_ENV=DEV ] ; then npm install --ony=dev; else npm install --only=prod ; fi
+RUN if [ $NODE_ENV=DEV ] ; then npm install --only=dev; else npm install --only=prod ; fi
 
 # Expose the port
 ENV PORT=3000
