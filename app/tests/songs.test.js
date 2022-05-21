@@ -73,6 +73,17 @@ const testingSongs = [
     },
 ];
 
+const newSongToAddTest = {
+    title: "5",
+    artistId: testingArtistsId[1],
+    albumId: testingAlbumId[2],
+    duration: 100,
+    url: "./5",
+    tier: "Free",
+    genre: "Folklore",
+    description: "",
+}
+
 let testingSongsId = []
 
 const createTestingSongs = async (songs) => {
@@ -140,12 +151,21 @@ describe("GET /songs/:id", () => {
         const response = await request(app).get(`/songs/${testingSongsId[0]}`);
         expect(response.status).toEqual(200);
         expect(response.body.data).toEqual(testingSongs[0])
-    })
+    });
 
     it("Check error when passing non existen id", async () => {
         const response = await request(app).get(`/songs/527f1f77bcf86cd799439012`)
         expect(response.status).toEqual(404);
-    })
-})
+    });
+});
 
+describe("POST /songs/", () => {
+    it("Check correct creation of song", async () => {
+        const response = await request(app).post("/songs/").send(newSongToAddTest);
+        expect(response.status).toEqual(201);
+
+        const secondResponse = await request(app).get("/songs/")
+        expect(secondResponse.body.data).toHaveLength(5);
+    })
+});
 
