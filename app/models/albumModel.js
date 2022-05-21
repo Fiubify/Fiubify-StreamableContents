@@ -1,22 +1,22 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const songSchema = require('./songModel');
+const songSchema = require("./songModel");
 
 const albumSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   tracks: {
     type: [songSchema],
   },
   year: {
-    type: Number
+    type: Number,
   },
   author_id: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-module.exports = mongoose.model('Album', albumSchema);
+module.exports = mongoose.model("Album", albumSchema);

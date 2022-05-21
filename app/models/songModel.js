@@ -24,6 +24,18 @@ const songSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  tier: {
+    type: String,
+    required: true,
+    default: "Free",
+  },
+  genre: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Song", songSchema);

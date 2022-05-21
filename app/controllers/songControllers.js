@@ -49,7 +49,8 @@ const getSongById = async (req, res, next) => {
 };
 
 const createSong = async (req, res, next) => {
-  const { title, artistId, albumId, duration, url } = req.body;
+  const { title, artistId, albumId, duration, url, tier, genre, description } =
+    req.body;
   try {
     const newSong = new Song({
       title: title,
@@ -57,6 +58,9 @@ const createSong = async (req, res, next) => {
       albumId: albumId,
       duration: duration,
       url: url,
+      tier: tier,
+      genre: genre,
+      description: description,
     });
 
     await newSong.save();
