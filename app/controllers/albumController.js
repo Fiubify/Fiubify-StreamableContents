@@ -1,22 +1,22 @@
 const ApiError = require("../errors/apiError");
 const Album = require("../models/albumModel");
+const QueryParser = require('../utils/queryParser');
 
 const getAllAlbumsByQuery = async (req, res, next) => {
-  const artistId = req.query.artist;
-  const tier = req.query.tier;
 
-  const query = {};
+  const listOfQueryKeys = ['artistId', 'tier'];
+  const queryParser = new QueryParser(listOfQueryKeys)
 
-  if (artistId) {
-    query.artistId = artistId;
-  }
-
-  if (tier) {
-    query.tier = tier;
-  }
+  const query = queryParser.parseRequest(req);
 
   try {
-    const filteredAlbums = await Album.find(query).select("-_id");
+    const filteredAlbums = await Album.find(query).select("-_id -__v");
+
+    if (!filteredAlbums.length) {
+      const message = queryParser.getErrorMessageNotFound(req);
+      next(ApiError.resourceNotFound(message));
+      return;
+    }
 
     res.status(200).json({
       data: filteredAlbums,
@@ -31,7 +31,7 @@ const getAllAlbumsByQuery = async (req, res, next) => {
 const getAlbumById = async (req, res, next) => {
   const albumId = req.params.id;
 
-  const requestedAlbum = await Album.findById(albumId);
+  const requestedAlbum = await Album.findById(albumId).select("-_id -__v");
 
   if (requestedAlbum == null) {
     next(ApiError.resourceNotFound(`Album with id ${albumId} doesn't exists`));
