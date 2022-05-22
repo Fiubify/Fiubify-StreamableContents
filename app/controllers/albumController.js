@@ -13,7 +13,7 @@ const getAllAlbumsByQuery = async (req, res, next) => {
     try {
         const filteredAlbums = await Album.find(query).select("-_id -__v");
 
-        if (!filteredAlbums.length) {
+        if (!filteredAlbums.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req);
             next(ApiError.resourceNotFound(message));
             return;
