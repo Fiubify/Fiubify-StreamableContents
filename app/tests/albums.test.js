@@ -20,6 +20,14 @@ const testingArtistsId = [
 ];
 
 let testingAlbumsId = [];
+const testingSongData = {
+    title: "5",
+    artistId: testingArtistsId[1],
+    duration: 100,
+    url: "./5",
+    genre: "Folklore",
+    description: "",
+}
 
 const testAlbums = [
     {
@@ -115,10 +123,20 @@ describe("POST /albums/", () => {
             artistId: testingArtistsId[0],
             tier: "Free"
         });
-
+        expect(response.status).toEqual(201);
 
         const secondResponse = await request(app).get("/albums/");
-        expect(response.status).toEqual(201);
         expect(secondResponse.body.data).toHaveLength(4);
+    });
+});
+
+describe("POST /albums/:id/add-song", () => {
+    it("Create a song and add to album", async () => {
+        const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongData);
+
+        expect(response.status).toEqual(201);
+
+        const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
+        expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
     })
-})
+});

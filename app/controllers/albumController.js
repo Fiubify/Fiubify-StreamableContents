@@ -1,4 +1,5 @@
 const ApiError = require("../errors/apiError");
+const Song = require("../models/songModel");
 const Album = require("../models/albumModel");
 const QueryParser = require('../utils/queryParser');
 
@@ -62,8 +63,37 @@ const createAlbum = async (req, res, next) => {
     }
 }
 
+const createSongAndAddToAlbum = async (req, res, next) => {
+    const albumId = req.params.id;
+    const {title, artistId, duration, url, genre, description} = req.body;
+
+    const requestedAlbum = await Album.findById(albumId);
+
+    if (!requestedAlbum) {
+        next(ApiError.resourceNotFound(`Album with id ${albumId} not found`));
+        return;
+    }
+
+    const newSong = new Song({
+        title: title,
+        artistId: artistId,
+        albumId: albumId,
+        duration: duration,
+        url: url,
+        tier: requestedAlbum.tier,
+        genre: genre,
+        description: description,
+    });
+    await newSong.save();
+    requestedAlbum.tracks.push(newSong);
+    await requestedAlbum.save();
+
+    res.status(201).send({})
+}
+
 module.exports = {
     getAllAlbumsByQuery,
     getAlbumById,
-    createAlbum
+    createAlbum,
+    createSongAndAddToAlbum
 };
