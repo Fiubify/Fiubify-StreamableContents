@@ -9,6 +9,7 @@ const albumSchema = mongoose.Schema({
     },
     tracks: {
         type: [songSchema],
+        default: []
     },
     artistId: {
         type: String,

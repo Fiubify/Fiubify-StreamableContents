@@ -107,3 +107,18 @@ describe("GET /albums/:id", () => {
         expect(response.status).toEqual(404);
     });
 });
+
+describe("POST /albums/", () => {
+    it("Create a new album", async () => {
+        const response = await request(app).post("/albums/").send({
+            title: 'someTitle',
+            artistId: testingArtistsId[0],
+            tier: "Free"
+        });
+
+
+        const secondResponse = await request(app).get("/albums/");
+        expect(response.status).toEqual(201);
+        expect(secondResponse.body.data).toHaveLength(4);
+    })
+})
