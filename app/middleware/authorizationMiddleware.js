@@ -1,9 +1,18 @@
+const axios = require("axios");
+
 const ApiError = require("../errors/apiError");
 
 const Song = require("../models/songModel");
 const Album = require("../models/albumModel");
 
+//TODO WARNING Change hardcoded path
 const validateUserWithToken = async (token, artistId) => {
+    const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/user", {
+        token: token,
+        userId: artistId
+    });
+
+    return response
 };
 
 
