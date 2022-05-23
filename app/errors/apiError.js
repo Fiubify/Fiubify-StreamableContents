@@ -31,6 +31,10 @@ class ApiError {
       },
     };
   }
+
+  constructResponse(res) {
+    res.status(this.code).json(this.toJson());
+  }
 }
 
 module.exports = ApiError;
