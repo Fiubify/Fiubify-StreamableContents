@@ -83,7 +83,7 @@ afterAll(async () => {
     await testingDb.dropTestDbDatabase();
 });
 
-describe.skip("GET /albums/", () => {
+describe("GET /albums/", () => {
     it("Check if it filter by artistId", async () => {
         const response = await request(app).get("/albums/").query({artistId: testingArtistsId[0]});
 
@@ -116,7 +116,7 @@ describe.skip("GET /albums/", () => {
     })
 });
 
-describe.skip("GET /albums/:id", () => {
+describe("GET /albums/:id", () => {
     it("Check it gets the correct song", async () => {
         const response = await request(app).get(`/albums/${testingAlbumsId[0]}`);
         expect(response.status).toEqual(200);
@@ -129,7 +129,7 @@ describe.skip("GET /albums/:id", () => {
     });
 });
 
-describe.skip("POST /albums/", () => {
+describe("POST /albums/", () => {
     it("Create a new album", async () => {
         const response = await request(app).post("/albums/").send({
             title: 'someTitle',
@@ -143,7 +143,7 @@ describe.skip("POST /albums/", () => {
     });
 });
 
-describe.skip("POST /albums/:id/add-song", () => {
+describe("POST /albums/:id/add-song", () => {
     it("Create a song and add to album", async () => {
         const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongData);
 

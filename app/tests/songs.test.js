@@ -33,7 +33,7 @@ const testingAlbumId = [
 
 const testingSongs = [
     {
-        title: "1",
+        title: "El farsante",
         artistId: testingArtistsId[0],
         albumId: testingAlbumId[0],
         duration: 100,
@@ -73,7 +73,7 @@ const testingSongs = [
         description: "",
     },
     {
-        title: "11",
+        title: "el farsante",
         artistId: testingArtistsId[2],
         albumId: testingAlbumId[3],
         duration: 150,
@@ -148,7 +148,14 @@ describe("GET /songs/", () => {
     });
 
     it("Check if it filter by title", async () => {
-        const response = await request(app).get("/songs/").query({title: '1'});
+        const response = await request(app).get("/songs/").query({title: '2'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(1);
+    });
+
+    it("Check if it filter case-insensitiveness by title", async () => {
+        const response = await request(app).get("/songs/").query({title: 'el'});
 
         expect(response.status).toEqual(200);
         expect(response.body.data).toHaveLength(2);
@@ -178,19 +185,6 @@ describe("GET /songs/:id", () => {
         expect(response.status).toEqual(404);
     });
 });
-
-/*describe("GET /songs/:title", () => {
-    it("Check it gets the correct song", async () => {
-        const response = await request(app).get(`/songs/6`);
-        expect(response.status).toEqual(200);
-        expect(response.body.data).toEqual(testingSongs[4]);
-    });
-
-    /*it("Check error when passing non existen title", async () => {
-        const response = await request(app).get(`/songs/527f1f77bcf86cd799439012`);
-        expect(response.status).toEqual(404);
-    });
-});*/
 
 describe("POST /songs/", () => {
     it("Check correct creation of song", async () => {
