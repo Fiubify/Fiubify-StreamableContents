@@ -16,3 +16,11 @@ const createPlaylist = async (req, res, next) => {
     return
   }
 }
+
+const getPlaylistWithTracks = async (req, res, next) => {
+
+}
+
+module.exports = {
+  createPlaylist,
+}

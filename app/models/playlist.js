@@ -1,5 +1,15 @@
 const mongoose = require("mongoose")
 
+const ownerSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  id: {
+    type: String
+  }
+})
+
 const playlistSchema = mongoose.Schema({
   title: {
     type: String,
@@ -9,17 +19,17 @@ const playlistSchema = mongoose.Schema({
     type: String,
     required: false
   },
-  ownerIds: {
-    type: [ObjectId],
-    required: true
+  owners: {
+    type: [ownerSchema]
   },
   collaborative: {
     type: Boolean,
     required: true,
     default: false
   },
-  trackIds: {
-    type: [ObjectId],
+  tracks: {
+    type: [mongoose.Schema.ObjectId],
+    ref: 'Song',
     required: true,
     default: []
   }
