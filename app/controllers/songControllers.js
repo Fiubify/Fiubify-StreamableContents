@@ -4,8 +4,9 @@ const QueryParser = require('../utils/queryParser');
 
 const getAllSongsByQuery = async (req, res, next) => {
 
-    const queryParams = ['artistId', 'albumId', 'genre']
-    const queryParser = new QueryParser(queryParams);
+    const queryParams = ['artistId', 'albumId', 'genre'];
+    const queryParamsContained = ['title'];
+    const queryParser = new QueryParser(queryParams, queryParamsContained);
 
     const query = queryParser.parseRequest(req);
 
@@ -40,24 +41,6 @@ const getSongById = async (req, res, next) => {
     });
 };
 
-const getSongsByTitle = async (req, res, next) => {
-    const songTitle = req.params.name;
-
-    try {
-        //const requestedSong = await Song.find({title: new RegExp('^'+songTitle+'$', "i")}).select("-_id -__v");
-        const filteredSongs = await Song.find({title: {$regex: songTitle}}).select("-_id -__v");
-        if (!filteredSongs.length && Object.keys({title: {$regex: songTitle}}).length !== 0) {
-            next(ApiError.resourceNotFound(`No songs with title ${songTitle} exist`));
-        } else {
-            res.status(200).json({
-                data: filteredSongs,
-            });
-        }
-    } catch (err) {
-        next(ApiError.internalError("Internal error when getting songs"));
-    }
-};
-
 const createSong = async (req, res, next) => {
     const {title, artistId, albumId, duration, url, tier, genre, description} =
         req.body;
@@ -86,5 +69,4 @@ module.exports = {
     getAllSongsByQuery,
     getSongById,
     createSong,
-    getSongsByTitle,
 };

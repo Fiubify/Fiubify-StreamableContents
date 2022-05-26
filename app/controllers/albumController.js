@@ -6,7 +6,8 @@ const QueryParser = require('../utils/queryParser');
 const getAllAlbumsByQuery = async (req, res, next) => {
 
     const listOfQueryKeys = ['artistId', 'tier'];
-    const queryParser = new QueryParser(listOfQueryKeys)
+    const queryParamsContained = ['title'];
+    const queryParser = new QueryParser(listOfQueryKeys, queryParamsContained)
 
     const query = queryParser.parseRequest(req);
 
