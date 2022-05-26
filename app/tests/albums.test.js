@@ -17,6 +17,7 @@ app.use(errorHandlerMiddleware);
 const testingArtistsId = [
     "507f1f77bcf86cd799439011",
     "607f1f77bcf86cd799439011",
+    "707f1f77bcf86cd799439011",
 ];
 
 let testingAlbumsId = [];
@@ -47,7 +48,13 @@ const testAlbums = [
         tracks: [],
         artistId: testingArtistsId[1],
         tier: 'Paid'
-    }
+    },
+    {
+        title: '11',
+        tracks: [],
+        artistId: testingArtistsId[2],
+        tier: 'Paid'
+    },
 ];
 
 const createTestingAlbums = async (albums) => {
@@ -91,10 +98,17 @@ describe("GET /albums/", () => {
         expect(response.body.data).toHaveLength(1);
     });
 
-    it("Check if it returns all songs when no filter is passed", async () => {
+    it("Check if it filter by title", async () => {
+        const response = await request(app).get("/albums/").query({title: '1'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(2);
+    });
+
+    it("Check if it returns all albums when no filter is passed", async () => {
         const response = await request(app).get("/albums/");
         expect(response.status).toEqual(200);
-        expect(response.body.data).toHaveLength(3);
+        expect(response.body.data).toHaveLength(4);
     });
 
     it("Check it returns an error with wrong filter", async () => {
@@ -126,7 +140,7 @@ describe("POST /albums/", () => {
         expect(response.status).toEqual(201);
 
         const secondResponse = await request(app).get("/albums/");
-        expect(secondResponse.body.data).toHaveLength(4);
+        expect(secondResponse.body.data).toHaveLength(5);
     });
 });
 
