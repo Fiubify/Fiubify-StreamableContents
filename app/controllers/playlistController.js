@@ -52,8 +52,24 @@ const getPlaylist = async (req, res, next) => {
     res.status(200).json({data: requestedPlaylist})
 }
 
+const addTrackToPlaylist = async (req, res, next) => {
+    const playlistId = req.params.id
+    const trackId = req.body.trackId
+
+    const requestedPlaylist = await Playlist.findById(playlistId)
+    if (!requestedPlaylist) {
+        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+        return
+    }
+
+    requestedPlaylist.tracks.push(trackId)
+    await requestedPlaylist.save()
+    res.status(204).send({})
+}
+
 module.exports = {
     getPlaylists,
     getPlaylist,
     createPlaylist,
+    addTrackToPlaylist,
 }

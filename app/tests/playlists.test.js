@@ -19,18 +19,8 @@ app.use("/playlists", playlistRouter)
 
 app.use(errorHandlerMiddleware)
 
-const createTestTrack = async () => {
-    const song = {
-        title: "Cherokee",
-        artistId: mongoose.Types.ObjectId(),
-        albumId: mongoose.Types.ObjectId(),
-        duration: 374,
-        url: "./cherokee",
-        tier: "Free",
-        genre: "Jazz",
-        description: "",
-    }
-    const newSong = new Song(song)
+const createTestTrack = async (track) => {
+    const newSong = new Song(track)
     await newSong.save()
 
     return newSong.id
@@ -66,7 +56,17 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-    const trackId = await createTestTrack()
+    const testTrack = {
+        title: "Cherokee",
+        artistId: mongoose.Types.ObjectId(),
+        albumId: mongoose.Types.ObjectId(),
+        duration: 374,
+        url: "./cherokee",
+        tier: "Free",
+        genre: "Jazz",
+        description: "",
+    }
+    const trackId = await createTestTrack(testTrack)
 
     const testingPlaylists = [
         {
@@ -149,4 +149,27 @@ describe("GET /playlists/:id", () => {
         expect(response.body.data.tracks[0].title).toEqual('Cherokee')
     })
 
+})
+
+describe("POST /playlists/:id/add-track", () => {
+
+    it("Adds track to playlist", async() => {
+        let track = {
+            title: "There Will Never Be Another You",
+            artistId: mongoose.Types.ObjectId(),
+            albumId: mongoose.Types.ObjectId(),
+            duration: 374,
+            url: "./there-will-never-be-another-you",
+            tier: "Free",
+            genre: "Jazz",
+            description: "",
+        }
+        const trackId = await createTestTrack(track)
+        const addTrackRequestBody = {trackId: trackId}
+
+        const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/add-track`)
+                                           .send(addTrackRequestBody)
+
+        expect(response.status).toEqual(204)
+    })
 })
