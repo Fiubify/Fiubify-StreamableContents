@@ -6,7 +6,6 @@ const errorHandlerMiddleware = require("../middleware/errorHandler");
 const request = require("supertest");
 const express = require("express");
 
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded());
