@@ -168,6 +168,8 @@ describe("POST /playlists/:id/add-track", () => {
         const addTrackRequestBody = {trackId: trackId}
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/add-track`)
+                                           .send(addTrackRequestBody)
+
         expect(response.status).toEqual(204)
     })
 })
