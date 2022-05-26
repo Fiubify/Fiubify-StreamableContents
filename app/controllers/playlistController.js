@@ -1,5 +1,4 @@
 const Playlist = require("../models/playlist")
-const Song = require("../models/songModel")
 const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 

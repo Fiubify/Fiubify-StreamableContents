@@ -36,17 +36,17 @@ const createTestTrack = async () => {
     return newSong.id
 }
 
-owner1 = {
+const owner1 = {
     name: "Juan Perez",
     id: mongoose.Types.ObjectId().toString()
 }
 
-owner2 = {
+const owner2 = {
     name: "Francisca Sanchez",
     id: mongoose.Types.ObjectId().toString()
 }
 
-owner3 = {
+const owner3 = {
     name: "Emiliano Sanchez",
     id: mongoose.Types.ObjectId().toString()
 }
