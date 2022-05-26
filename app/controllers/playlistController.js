@@ -23,8 +23,8 @@ const createPlaylist = async (req, res, next) => {
 }
 
 const getPlaylists = async (req, res, next) => {
-    const queryParams = ['title', 'owners']
-    const queryParser = new QueryParser(queryParams);
+    const queryParamsContained = ['title', 'owners']
+    const queryParser = new QueryParser([], queryParamsContained);
     const query = queryParser.parseRequest(req);
 
     try {
