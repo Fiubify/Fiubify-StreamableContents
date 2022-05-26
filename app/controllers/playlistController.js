@@ -11,6 +11,10 @@ const createPlaylist = async (req, res, next) => {
       ownerIds: ownerIds,
       collaborative: collaborative
     })
+
+    await newPlaylist.save()
+
+    res.status(201).send({})
   } catch (error) {
     next(ApiError.invalidArguments(`Invalid arguments passed`));
     return

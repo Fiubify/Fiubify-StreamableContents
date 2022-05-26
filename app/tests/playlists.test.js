@@ -45,5 +45,7 @@ describe("POST /playlists/", () => {
 
         const response = await request(app).post("/playlists/")
                                            .send(newPlaylistRequestBody)
+
+        expect(response.status).toEqual(201)
     })
 })
