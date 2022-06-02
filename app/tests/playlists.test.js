@@ -2,7 +2,7 @@ const testingDb = require("../services/dbTesting")
 
 const Song = require("../models/songModel")
 
-const Playlist = require("../models/playlist")
+const Playlist = require("../models/playlistModel")
 const playlistRouter = require("../routes/playlistRoutes")
 
 const errorHandlerMiddleware = require("../middleware/errorHandler")
@@ -118,7 +118,7 @@ describe("POST /playlists/", () => {
         }
 
         const response = await request(app).post("/playlists/")
-                                           .send(newPlaylistRequestBody)
+            .send(newPlaylistRequestBody)
 
         expect(response.status).toEqual(201)
     })
@@ -153,7 +153,7 @@ describe("GET /playlists/:id", () => {
 
 describe("POST /playlists/:id/add-track", () => {
 
-    it("Adds track to playlist", async() => {
+    it("Adds track to playlist", async () => {
         let track = {
             title: "There Will Never Be Another You",
             artistId: mongoose.Types.ObjectId(),
@@ -168,7 +168,7 @@ describe("POST /playlists/:id/add-track", () => {
         const addTrackRequestBody = {trackId: trackId}
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/add-track`)
-                                           .send(addTrackRequestBody)
+            .send(addTrackRequestBody)
 
         expect(response.status).toEqual(204)
     })
