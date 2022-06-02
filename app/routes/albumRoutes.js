@@ -6,7 +6,13 @@ const {protectUrlByAlbumOwner} = require("../middleware/authorizationMiddleware"
 
 router.get("/", albumControllers.getAllAlbumsByQuery);
 router.get("/:id", albumControllers.getAlbumById);
-router.post("/", protectUrlByAlbumOwner, albumControllers.createAlbum);
-router.post("/:id/add-song", protectUrlByAlbumOwner, albumControllers.createSongAndAddToAlbum);
+
+if (process.env.NODE_ENV === "DEV") {
+    router.post("/", albumControllers.createAlbum);
+    router.post("/:id/add-song", albumControllers.createSongAndAddToAlbum);
+} else {
+    router.post("/", protectUrlByAlbumOwner, albumControllers.createAlbum);
+    router.post("/:id/add-song", protectUrlByAlbumOwner, albumControllers.createSongAndAddToAlbum);
+}
 
 module.exports = router;
