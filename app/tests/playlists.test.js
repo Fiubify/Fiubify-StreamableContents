@@ -56,6 +56,9 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+    await testingDb.dropTestDbCollections()
+    testingPlaylistsIds = []
+
     const testTrack = {
         title: "Cherokee",
         artistId: mongoose.Types.ObjectId(),
@@ -92,11 +95,6 @@ beforeEach(async () => {
         }
     ]
     await createTestingPlaylists(testingPlaylists)
-})
-
-afterEach(async () => {
-    await testingDb.dropTestDbCollections()
-    testingPlaylistsIds = []
 })
 
 afterAll(async () => {
