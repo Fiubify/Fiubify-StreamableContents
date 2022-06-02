@@ -71,13 +71,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await testingDb.dropTestDbCollections();
+    testingAlbumsId = [];
     await createTestingAlbums(testAlbums);
 });
 
-afterEach(async () => {
-    await testingDb.dropTestDbCollections();
-    testingAlbumsId = [];
-});
 
 afterAll(async () => {
     await testingDb.dropTestDbDatabase();

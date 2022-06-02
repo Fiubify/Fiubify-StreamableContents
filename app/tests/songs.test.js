@@ -116,11 +116,6 @@ beforeEach(async () => {
     await createTestingSongs(testingSongs);
 });
 
-afterEach(async () => {
-    /*await testingDb.dropTestDbCollections();
-    testingSongsId = [];*/
-});
-
 afterAll(async () => {
     await testingDb.dropTestDbDatabase();
 });
