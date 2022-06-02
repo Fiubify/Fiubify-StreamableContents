@@ -4,8 +4,9 @@ const QueryParser = require('../utils/queryParser');
 
 const getAllSongsByQuery = async (req, res, next) => {
 
-    const queryParams = ['artistId', 'albumId', 'genre']
-    const queryParser = new QueryParser(queryParams);
+    const queryParams = ['artistId', 'albumId', 'genre'];
+    const queryParamsContained = ['title'];
+    const queryParser = new QueryParser(queryParams, queryParamsContained);
 
     const query = queryParser.parseRequest(req);
 

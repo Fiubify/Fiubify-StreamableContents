@@ -1,6 +1,7 @@
 class QueryParser {
-    constructor(listOfKeys) {
+    constructor(listOfKeys, listOfKeysContained) {
         this.listOfKeys = listOfKeys
+        this.listOfKeysContained = listOfKeysContained
     }
 
     parseRequest(req) {
@@ -9,6 +10,12 @@ class QueryParser {
         for (const key of this.listOfKeys) {
             if (req.query[key]) {
                 query[key] = req.query[key];
+            }
+        }
+
+        for (const key of this.listOfKeysContained) {
+            if (req.query[key]) {
+                query[key] = {$regex: req.query[key], $options: "i"};
             }
         }
 

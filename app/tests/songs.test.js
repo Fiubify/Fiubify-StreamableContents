@@ -6,7 +6,6 @@ const errorHandlerMiddleware = require("../middleware/errorHandler");
 const request = require("supertest");
 const express = require("express");
 
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded());
@@ -22,17 +21,19 @@ app.use(errorHandlerMiddleware);
 const testingArtistsId = [
     "507f1f77bcf86cd799439011",
     "607f1f77bcf86cd799439011",
+    "707f1f77bcf86cd799439011",
 ];
 
 const testingAlbumId = [
     "507f1f77bcf86cd799439012",
     "507f1f77bcf86cd799439013",
     "507f1f77bcf86cd799439010",
+    "507f1f77bcf86cd799439014",
 ];
 
 const testingSongs = [
     {
-        title: "1",
+        title: "El farsante",
         artistId: testingArtistsId[0],
         albumId: testingAlbumId[0],
         duration: 100,
@@ -71,6 +72,16 @@ const testingSongs = [
         genre: "Folklore",
         description: "",
     },
+    {
+        title: "el farsante",
+        artistId: testingArtistsId[2],
+        albumId: testingAlbumId[3],
+        duration: 150,
+        url: "./6",
+        tier: "Free",
+        genre: "Trap",
+        description: "",
+    },
 ];
 
 const newSongToAddTest = {
@@ -100,12 +111,14 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await testingDb.dropTestDbCollections();
+    testingSongsId = [];
     await createTestingSongs(testingSongs);
 });
 
 afterEach(async () => {
-    await testingDb.dropTestDbCollections();
-    testingSongsId = [];
+    /*await testingDb.dropTestDbCollections();
+    testingSongsId = [];*/
 });
 
 afterAll(async () => {
@@ -134,10 +147,24 @@ describe("GET /songs/", () => {
         expect(response.body.data).toHaveLength(2);
     });
 
+    it("Check if it filter by title", async () => {
+        const response = await request(app).get("/songs/").query({title: '2'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(1);
+    });
+
+    it("Check if it filter case-insensitiveness by title", async () => {
+        const response = await request(app).get("/songs/").query({title: 'el'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(2);
+    });
+
     it("Check if it returns all songs when no filter is passed", async () => {
         const response = await request(app).get("/songs/");
         expect(response.status).toEqual(200);
-        expect(response.body.data).toHaveLength(4);
+        expect(response.body.data).toHaveLength(5);
     });
 
     it("Check it returns an error with wrong filter", async () => {
@@ -165,7 +192,7 @@ describe("POST /songs/", () => {
         expect(response.status).toEqual(201);
 
         const secondResponse = await request(app).get("/songs/")
-        expect(secondResponse.body.data).toHaveLength(5);
+        expect(secondResponse.body.data).toHaveLength(6);
     })
 });
 
