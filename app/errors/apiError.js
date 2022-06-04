@@ -1,40 +1,45 @@
 class ApiError {
-  constructor(code, message) {
-    this.code = code;
-    this.message = message;
-  }
+    constructor(code, message) {
+        this.code = code;
+        this.message = message;
+    }
 
-  static resourceNotFound(msg) {
-    return new ApiError(404, msg);
-  }
+    static missingFieldsInBody(missingFields) {
+        const msg = `Missing fields in body: ${missingFields.join(',')}`
+        return ApiError.invalidArguments(msg);
+    }
 
-  static invalidArguments(msg) {
-    return new ApiError(400, msg);
-  }
+    static resourceNotFound(msg) {
+        return new ApiError(404, msg);
+    }
 
-  static internalError(msg) {
-    return new ApiError(500, msg);
-  }
+    static invalidArguments(msg) {
+        return new ApiError(400, msg);
+    }
 
-  static authorizationError(msg) {
-    return new ApiError(401, msg);
-  }
+    static internalError(msg) {
+        return new ApiError(500, msg);
+    }
 
-  static forbiddenError(msg) {
-    return new ApiError(403, msg);
-  }
+    static authorizationError(msg) {
+        return new ApiError(401, msg);
+    }
 
-  toJson() {
-    return {
-      error: {
-        msg: this.message,
-      },
-    };
-  }
+    static forbiddenError(msg) {
+        return new ApiError(403, msg);
+    }
 
-  constructResponse(res) {
-    res.status(this.code).json(this.toJson());
-  }
+    toJson() {
+        return {
+            error: {
+                msg: this.message,
+            },
+        };
+    }
+
+    constructResponse(res) {
+        res.status(this.code).json(this.toJson());
+    }
 }
 
 module.exports = ApiError;

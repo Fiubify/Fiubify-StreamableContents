@@ -46,6 +46,11 @@ const getAlbumById = async (req, res, next) => {
 };
 
 const createAlbum = async (req, res, next) => {
+    if (res.missingFieldsInBody) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
     const {title, artistId, tier} = req.body;
 
     try {
@@ -65,6 +70,11 @@ const createAlbum = async (req, res, next) => {
 }
 
 const createSongAndAddToAlbum = async (req, res, next) => {
+    if (res.missingFieldsInBody) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
     const albumId = req.params.id;
     const {title, artistId, duration, url, genre, description} = req.body;
 
