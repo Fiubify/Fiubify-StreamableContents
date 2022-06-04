@@ -42,7 +42,7 @@ const getSongById = async (req, res, next) => {
 };
 
 const createSong = async (req, res, next) => {
-    if (res.missingFieldsInBody) {
+    if (!res.missingFieldsInBody) {
         next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
         return;
     }
