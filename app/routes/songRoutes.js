@@ -4,7 +4,6 @@ const router = express.Router();
 const songControllers = require("../controllers/songControllers");
 const {songInputSchema} = require("../schemas/songsInputSchema");
 
-const {protectUrlBySongOwner} = require("../middleware/authorizationMiddleware");
 const validateReqBody = require("../middleware/bodyValidationMiddleware");
 
 router.get("/", songControllers.getAllSongsByQuery);
