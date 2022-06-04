@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "DEV") {
     router.post("/", validateReqBody(albumInputSchema), albumControllers.createAlbum);
     router.post("/:id/add-song", validateReqBody(songIntoAlbumInputSchema), albumControllers.createSongAndAddToAlbum);
 } else {
-    router.post("/", validateReqBody(albumInputSchema), albumControllers.createAlbum);
+    router.post("/", protectUrlByAlbumOwner, validateReqBody(albumInputSchema), albumControllers.createAlbum);
     router.post("/:id/add-song", protectUrlByAlbumOwner, validateReqBody(songIntoAlbumInputSchema), albumControllers.createSongAndAddToAlbum);
 }
 
