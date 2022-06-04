@@ -139,6 +139,17 @@ describe("POST /albums/", () => {
         const secondResponse = await request(app).get("/albums/");
         expect(secondResponse.body.data).toHaveLength(5);
     });
+
+    it("Create a new album with missing field", async () => {
+        const response = await request(app).post("/albums/").send({
+            title: 'someTitle',
+            artistId: testingArtistsId[0],
+        });
+        expect(response.status).toEqual(400);
+
+        const secondResponse = await request(app).get("/albums/");
+        expect(secondResponse.body.data).toHaveLength(4);
+    });
 });
 
 describe("POST /albums/:id/add-song", () => {
@@ -149,5 +160,16 @@ describe("POST /albums/:id/add-song", () => {
 
         const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
+    })
+
+    it("Create a sing with missing fields and add to album", async () => {
+        let testingSongDataWithoutField = Object.assign(testingSongData);
+        testingSongDataWithoutField.duration = undefined;
+        const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongDataWithoutField);
+
+        expect(response.status).toEqual(400);
+
+        const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
+        expect(updatedAlbumResponse.body.data.tracks).toHaveLength(0);
     })
 });
