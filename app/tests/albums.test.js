@@ -71,19 +71,17 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await testingDb.dropTestDbCollections();
+    testingAlbumsId = [];
     await createTestingAlbums(testAlbums);
 });
 
-afterEach(async () => {
-    await testingDb.dropTestDbCollections();
-    testingAlbumsId = [];
-});
 
 afterAll(async () => {
     await testingDb.dropTestDbDatabase();
 });
 
-describe.skip("GET /albums/", () => {
+describe("GET /albums/", () => {
     it("Check if it filter by artistId", async () => {
         const response = await request(app).get("/albums/").query({artistId: testingArtistsId[0]});
 
@@ -116,7 +114,7 @@ describe.skip("GET /albums/", () => {
     })
 });
 
-describe.skip("GET /albums/:id", () => {
+describe("GET /albums/:id", () => {
     it("Check it gets the correct song", async () => {
         const response = await request(app).get(`/albums/${testingAlbumsId[0]}`);
         expect(response.status).toEqual(200);
@@ -129,7 +127,7 @@ describe.skip("GET /albums/:id", () => {
     });
 });
 
-describe.skip("POST /albums/", () => {
+describe("POST /albums/", () => {
     it("Create a new album", async () => {
         const response = await request(app).post("/albums/").send({
             title: 'someTitle',
@@ -141,9 +139,20 @@ describe.skip("POST /albums/", () => {
         const secondResponse = await request(app).get("/albums/");
         expect(secondResponse.body.data).toHaveLength(5);
     });
+
+    it("Create a new album with missing field", async () => {
+        const response = await request(app).post("/albums/").send({
+            title: 'someTitle',
+            artistId: testingArtistsId[0],
+        });
+        expect(response.status).toEqual(400);
+
+        const secondResponse = await request(app).get("/albums/");
+        expect(secondResponse.body.data).toHaveLength(4);
+    });
 });
 
-describe.skip("POST /albums/:id/add-song", () => {
+describe("POST /albums/:id/add-song", () => {
     it("Create a song and add to album", async () => {
         const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongData);
 
@@ -151,5 +160,16 @@ describe.skip("POST /albums/:id/add-song", () => {
 
         const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
+    })
+
+    it("Create a sing with missing fields and add to album", async () => {
+        let testingSongDataWithoutField = Object.assign(testingSongData);
+        testingSongDataWithoutField.duration = undefined;
+        const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongDataWithoutField);
+
+        expect(response.status).toEqual(400);
+
+        const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
+        expect(updatedAlbumResponse.body.data.tracks).toHaveLength(0);
     })
 });

@@ -15,7 +15,7 @@ class QueryParser {
 
         for (const key of this.listOfKeysContained) {
             if (req.query[key]) {
-                query[key] = {$regex: req.query[key]};
+                query[key] = {$regex: req.query[key], $options: "i"};
             }
         }
 

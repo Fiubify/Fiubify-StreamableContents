@@ -2,7 +2,7 @@ const testingDb = require("../services/dbTesting")
 
 const Song = require("../models/songModel")
 
-const Playlist = require("../models/playlist")
+const Playlist = require("../models/playlistModel")
 const playlistRouter = require("../routes/playlistRoutes")
 
 const errorHandlerMiddleware = require("../middleware/errorHandler")
@@ -56,6 +56,9 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+    await testingDb.dropTestDbCollections()
+    testingPlaylistsIds = []
+
     const testTrack = {
         title: "Cherokee",
         artistId: mongoose.Types.ObjectId(),
@@ -95,11 +98,6 @@ beforeEach(async () => {
     await createTestingPlaylists(testingPlaylists)
 })
 
-afterEach(async () => {
-    await testingDb.dropTestDbCollections()
-    testingPlaylistsIds = []
-})
-
 afterAll(async () => {
     await testingDb.dropTestDbDatabase()
 })
@@ -119,7 +117,7 @@ describe("POST /playlists/", () => {
         }
 
         const response = await request(app).post("/playlists/")
-                                           .send(newPlaylistRequestBody)
+            .send(newPlaylistRequestBody)
 
         expect(response.status).toEqual(201)
     })
@@ -184,7 +182,7 @@ describe("POST /playlists/:id/edit", () => {
 
 describe("POST /playlists/:id/add-track", () => {
 
-    it("Adds track to playlist", async() => {
+    it("Adds track to playlist", async () => {
         let track = {
             title: "There Will Never Be Another You",
             artistId: mongoose.Types.ObjectId(),

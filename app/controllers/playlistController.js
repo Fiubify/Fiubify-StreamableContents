@@ -1,4 +1,4 @@
-const Playlist = require("../models/playlist")
+const Playlist = require("../models/playlistModel")
 const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 
@@ -46,7 +46,7 @@ const getPlaylists = async (req, res, next) => {
 const getPlaylist = async (req, res, next) => {
     const playlistId = req.params.id
     const requestedPlaylist = await Playlist.findById(playlistId)
-                                            .populate('tracks')
+        .populate('tracks')
     if (requestedPlaylist == null) {
         next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
         return

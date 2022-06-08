@@ -42,6 +42,11 @@ const getSongById = async (req, res, next) => {
 };
 
 const createSong = async (req, res, next) => {
+    if (res.missingFieldsInBody.length > 0) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
     const {title, artistId, albumId, duration, url, tier, genre, description} =
         req.body;
     try {
