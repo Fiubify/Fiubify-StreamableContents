@@ -2,6 +2,8 @@ const Playlist = require("../models/playlist")
 const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 
+const mongoose = require("mongoose")
+
 const createPlaylist = async (req, res, next) => {
     const {title, description, ownerIds, collaborative} = req.body
 
@@ -22,21 +24,22 @@ const createPlaylist = async (req, res, next) => {
 }
 
 const getPlaylists = async (req, res, next) => {
-    const queryParamsContained = ['title', 'owners']
-    const queryParser = new QueryParser([], queryParamsContained);
+    const queryParamsSubset = ['owners.id']
+    const queryParamsContained = ['title']
+    const queryParser = new QueryParser(queryParamsSubset, queryParamsContained)
+
     const query = queryParser.parseRequest(req);
 
     try {
-        const filteredPlaylists = await Playlist.find(query)
+        const filteredPlaylists = await Playlist.find(query).select("-_id");
         if (!filteredPlaylists.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req)
             next(ApiError.resourceNotFound(message))
-            return
         } else {
             res.status(200).json({data: filteredPlaylists})
         }
     } catch (error) {
-        next(ApiError.internalError("Internal error when getting playlists"))
+        next(ApiError.internalError(`Internal error when getting playlists: ${error}`))
     }
 }
 
@@ -50,6 +53,20 @@ const getPlaylist = async (req, res, next) => {
     }
 
     res.status(200).json({data: requestedPlaylist})
+}
+
+const editPlaylist = async (req, res, next) => {
+    const playlistId = req.params.id
+
+    let requestedPlaylist = await Playlist.findById(playlistId)
+    if (!requestedPlaylist) {
+        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+        return
+    }
+
+    Object.assign(requestedPlaylist, req.body)
+    await requestedPlaylist.save()
+    res.status(204).send({})
 }
 
 const addTrackToPlaylist = async (req, res, next) => {
@@ -67,9 +84,26 @@ const addTrackToPlaylist = async (req, res, next) => {
     res.status(204).send({})
 }
 
+const removeTrackFromPlaylist = async (req, res, next) => {
+    const playlistId = req.params.id
+    const trackId = req.body.trackId
+
+    let requestedPlaylist = await Playlist.findById(playlistId)
+    if (!requestedPlaylist) {
+        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+        return
+    }
+
+    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id != trackId)
+    await requestedPlaylist.save()
+    res.status(204).send({})
+}
+
 module.exports = {
+    createPlaylist,
     getPlaylists,
     getPlaylist,
-    createPlaylist,
+    editPlaylist,
     addTrackToPlaylist,
+    removeTrackFromPlaylist,
 }

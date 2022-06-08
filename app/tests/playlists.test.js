@@ -91,6 +91,7 @@ beforeEach(async () => {
             tracks: []
         }
     ]
+
     await createTestingPlaylists(testingPlaylists)
 })
 
@@ -133,6 +134,13 @@ describe("GET /playlists/", () => {
         expect(response.body.data).toHaveLength(3)
     })
 
+    it.only("Filters by owner ID", async () => {
+        const response = await request(app).get("/playlists/").query({'owners.id': owner1.id})
+
+        expect(response.status).toEqual(200)
+        expect(response.body.data).toHaveLength(2)
+    })
+
 })
 
 describe("GET /playlists/:id", () => {
@@ -151,6 +159,29 @@ describe("GET /playlists/:id", () => {
 
 })
 
+describe("POST /playlists/:id/edit", () => {
+
+    it.only("Successfully edits playlist", async() => {
+        const request_body = {
+            title: "Jazzy",
+            description: "An open jazz playlist",
+            owners: [owner1],
+            collaborative: true
+        }
+
+        const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/edit`)
+                                           .send(request_body)
+
+        const playlist = await Playlist.findById(testingPlaylistsIds[0])
+
+        expect(response.status).toEqual(204)
+        expect(playlist.title).toEqual('Jazzy')
+        expect(playlist.description).toEqual('An open jazz playlist')
+        expect(playlist.owners).toHaveLength(1)
+        expect(playlist.collaborative).toEqual(true)
+    })
+})
+
 describe("POST /playlists/:id/add-track", () => {
 
     it("Adds track to playlist", async() => {
@@ -165,11 +196,29 @@ describe("POST /playlists/:id/add-track", () => {
             description: "",
         }
         const trackId = await createTestTrack(track)
-        const addTrackRequestBody = {trackId: trackId}
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/add-track`)
-                                           .send(addTrackRequestBody)
+                                           .send({trackId: trackId})
+
+        const playlist = await Playlist.findById(testingPlaylistsIds[0])
 
         expect(response.status).toEqual(204)
+        expect(playlist.tracks).toHaveLength(2)
+    })
+})
+
+describe("POST /playlists/:id/remove-track", () => {
+
+    it("Removes track from playlist", async() => {
+        const track = await Song.find()
+        const trackId = track[0]._id
+
+        const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/remove-track`)
+                                           .send({trackId: trackId})
+
+        const playlist = await Playlist.findById(testingPlaylistsIds[0])
+
+        expect(response.status).toEqual(204)
+        expect(playlist.tracks).toHaveLength(0)
     })
 })

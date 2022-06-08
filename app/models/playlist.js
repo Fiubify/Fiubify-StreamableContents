@@ -28,7 +28,7 @@ const playlistSchema = mongoose.Schema({
     default: false
   },
   tracks: {
-    type: [mongoose.Schema.ObjectId],
+    type: [String],
     ref: 'Song',
     required: true,
     default: []
