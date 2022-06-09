@@ -72,6 +72,26 @@ const protectUrlByPlaylistOwner = async (req, res, next) => {
         return;
     }
 
+    const usersValidationResult = await validateMultipleUsersWithToken(token, playlist.owners.map(owner => owner.id));
+    if (usersValidationResult.status !== 200) {
+        ApiError.forbiddenError(`User isn't owner of album with id: ${playlistId}`).constructResponse(res);
+        return;
+    } else {
+        next();
+    }
+
+}
+
+const protectUrlByNonCollaborativePlaylistOwner = async (req, res, next) => {
+    const playlistId = req.params.id;
+    const token = req.body.token;
+
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) {
+        ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exists`).constructResponse(res);
+        return;
+    }
+
     if (!playlist.collaborative) {
         const usersValidationResult = await validateMultipleUsersWithToken(token, playlist.owners.map(owner => owner.id));
         if (usersValidationResult.status !== 200) {

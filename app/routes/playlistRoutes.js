@@ -19,8 +19,8 @@ if (process.env.NODE_ENV === "DEV") {
 } else {
     router.post("/", protectUrlByPlaylistOwner, playlistController.createPlaylist)
     router.post("/:id/edit", protectUrlByPlaylistOwner, playlistController.editPlaylist)
-    router.post("/:id/add-track", protectUrlByPlaylistOwner, playlistController.addTrackToPlaylist);
-    router.post("/:id/remove-track", protectUrlByPlaylistOwner, playlistController.removeTrackFromPlaylist)
+    router.post("/:id/add-track", protectUrlByNonCollaborativePlaylistOwner, playlistController.addTrackToPlaylist);
+    router.post("/:id/remove-track", protectUrlByNonCollaborativePlaylistOwner, playlistController.removeTrackFromPlaylist)
 }
 
 module.exports = router
