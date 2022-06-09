@@ -2,8 +2,6 @@ const Playlist = require("../models/playlistModel")
 const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 
-const mongoose = require("mongoose")
-
 const createPlaylist = async (req, res, next) => {
     const {title, description, ownerIds, collaborative} = req.body
 
