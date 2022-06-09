@@ -13,10 +13,14 @@ router.post("/:id/remove-track", playlistController.removeTrackFromPlaylist)
 
 if (process.env.NODE_ENV === "DEV") {
     router.post("/", playlistController.createPlaylist)
+    router.post("/:id/edit", playlistController.editPlaylist)
     router.post("/:id/add-track", playlistController.addTrackToPlaylist)
+    router.post("/:id/remove-track", playlistController.removeTrackFromPlaylist)
 } else {
     router.post("/", protectUrlByPlaylistOwner, playlistController.createPlaylist)
+    router.post("/:id/edit", protectUrlByPlaylistOwner, playlistController.editPlaylist)
     router.post("/:id/add-track", protectUrlByPlaylistOwner, playlistController.addTrackToPlaylist);
+    router.post("/:id/remove-track", protectUrlByPlaylistOwner, playlistController.removeTrackFromPlaylist)
 }
 
 module.exports = router
