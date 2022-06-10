@@ -12,7 +12,7 @@ const getAllAlbumsByQuery = async (req, res, next) => {
     const query = queryParser.parseRequest(req);
 
     try {
-        const filteredAlbums = await Album.find(query).select("-_id -__v");
+        const filteredAlbums = await Album.find(query).select("-__v");
 
         if (!filteredAlbums.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req);
@@ -26,7 +26,7 @@ const getAllAlbumsByQuery = async (req, res, next) => {
     } catch (err) {
         console.log(err);
         next(ApiError.internalError("Internal error when getting albums"));
-        return;
+
     }
 };
 
@@ -65,7 +65,7 @@ const createAlbum = async (req, res, next) => {
         res.status(201).send({})
     } catch (err) {
         next(ApiError.invalidArguments("Invalid arguments passed"));
-        return
+
     }
 }
 
