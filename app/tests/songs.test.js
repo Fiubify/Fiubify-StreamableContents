@@ -48,7 +48,7 @@ const testingSongs = [
         albumId: testingAlbumId[0],
         duration: 100,
         url: "./2",
-        tier: "Free",
+        tier: "Premium",
         genre: "Pop",
         description: "",
     },
@@ -154,6 +154,13 @@ describe("GET /songs/", () => {
 
         expect(response.status).toEqual(200);
         expect(response.body.data).toHaveLength(2);
+    });
+
+    it("Check if it filter by tier (Premium)", async () => {
+        const response = await request(app).get("/songs/").query({tier: 'Premium'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(1);
     });
 
     it("Check if it returns all songs when no filter is passed", async () => {
