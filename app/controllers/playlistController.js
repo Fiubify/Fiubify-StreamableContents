@@ -29,7 +29,7 @@ const getPlaylists = async (req, res, next) => {
     const query = queryParser.parseRequest(req);
 
     try {
-        const filteredPlaylists = await Playlist.find(query).select("-_id");
+        const filteredPlaylists = await Playlist.find(query);
         if (!filteredPlaylists.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req)
             next(ApiError.resourceNotFound(message))
