@@ -3,13 +3,13 @@ const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 
 const createPlaylist = async (req, res, next) => {
-    const {title, description, ownerIds, collaborative} = req.body
+    const {title, description, owners, collaborative} = req.body
 
     try {
         const newPlaylist = new Playlist({
             title: title,
             description: description,
-            ownerIds: ownerIds,
+            owners: owners,
             collaborative: collaborative
         })
 
@@ -95,7 +95,7 @@ const removeTrackFromPlaylist = async (req, res, next) => {
         return
     }
 
-    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id != trackId)
+    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id !== trackId)
     await requestedPlaylist.save()
     res.status(204).send({})
 }
