@@ -20,6 +20,10 @@ const albumSchema = mongoose.Schema({
         required: true,
         default: "Free",
     },
+    genre: {
+        type: String,
+        required: true,
+    },
 });
 
 module.exports = mongoose.model("Album", albumSchema);
