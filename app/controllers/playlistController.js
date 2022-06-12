@@ -43,15 +43,17 @@ const getPlaylists = async (req, res, next) => {
 
 const getPlaylist = async (req, res, next) => {
     const playlistId = req.params.id
-    const requestedPlaylist = await Playlist.findById(playlistId).then((playlist) => {
-        playlist.populate('tracks');
-    })
-    if (requestedPlaylist == null) {
-        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
-        return
-    }
+    Playlist.findById(playlistId).then((requestedPlaylist) => {
+        requestedPlaylist.populate('tracks').then((requestedPlaylist) => {
+            if (requestedPlaylist == null) {
+                next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+                return
+            }
 
-    res.status(200).json({data: requestedPlaylist})
+            res.status(200).json({data: requestedPlaylist})
+        })
+    })
+
 }
 
 const editPlaylist = async (req, res, next) => {
