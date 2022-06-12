@@ -35,25 +35,29 @@ const testAlbums = [
         title: '1',
         tracks: [],
         artistId: testingArtistsId[0],
-        tier: 'Free'
+        tier: 'Free',
+        genre: 'Folklore',
     },
     {
         title: '2',
         tracks: [],
         artistId: testingArtistsId[0],
-        tier: 'Paid'
+        tier: 'Paid',
+        genre: 'Pop'
     },
     {
         title: '3',
         tracks: [],
         artistId: testingArtistsId[1],
-        tier: 'Paid'
+        tier: 'Paid',
+        genre: 'Rock'
     },
     {
         title: '11',
         tracks: [],
         artistId: testingArtistsId[2],
-        tier: 'Paid'
+        tier: 'Paid',
+        genre: 'Rock'
     },
 ];
 
@@ -88,11 +92,19 @@ describe("GET /albums/", () => {
         expect(response.status).toEqual(200);
         expect(response.body.data).toHaveLength(2);
     });
-    it("Check if it filter by genre", async () => {
+
+    it("Check if it filter by tier", async () => {
         const response = await request(app).get("/albums/").query({tier: 'Free'});
 
         expect(response.status).toEqual(200);
         expect(response.body.data).toHaveLength(1);
+    });
+
+    it("Check if it filter by genre", async () => {
+        const response = await request(app).get("/albums/").query({genre: 'Rock'});
+
+        expect(response.status).toEqual(200);
+        expect(response.body.data).toHaveLength(2);
     });
 
     it("Check if it filter by title", async () => {
@@ -132,7 +144,8 @@ describe("POST /albums/", () => {
         const response = await request(app).post("/albums/").send({
             title: 'someTitle',
             artistId: testingArtistsId[0],
-            tier: "Free"
+            tier: "Free",
+            genre: "Trap"
         });
         expect(response.status).toEqual(201);
 

@@ -5,7 +5,7 @@ const QueryParser = require('../utils/queryParser');
 
 const getAllAlbumsByQuery = async (req, res, next) => {
 
-    const listOfQueryKeys = ['artistId', 'tier'];
+    const listOfQueryKeys = ['artistId', 'tier', 'genre'];
     const queryParamsContained = ['title'];
     const queryParser = new QueryParser(listOfQueryKeys, queryParamsContained)
 
@@ -51,13 +51,14 @@ const createAlbum = async (req, res, next) => {
         return;
     }
 
-    const {title, artistId, tier} = req.body;
+    const {title, artistId, tier, genre} = req.body;
 
     try {
         const newAlbum = new Album({
             title: title,
             artistId: artistId,
-            tier: tier
+            tier: tier,
+            genre: genre
         });
 
         await newAlbum.save();
@@ -65,7 +66,6 @@ const createAlbum = async (req, res, next) => {
         res.status(201).send({})
     } catch (err) {
         next(ApiError.invalidArguments("Invalid arguments passed"));
-
     }
 }
 
