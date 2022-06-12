@@ -3,13 +3,13 @@ const ApiError = require("../errors/apiError")
 const QueryParser = require('../utils/queryParser')
 
 const createPlaylist = async (req, res, next) => {
-    const {title, description, ownerIds, collaborative} = req.body
+    const {title, description, owners, collaborative} = req.body
 
     try {
         const newPlaylist = new Playlist({
             title: title,
             description: description,
-            ownerIds: ownerIds,
+            owners: owners,
             collaborative: collaborative
         })
 
@@ -29,7 +29,7 @@ const getPlaylists = async (req, res, next) => {
     const query = queryParser.parseRequest(req);
 
     try {
-        const filteredPlaylists = await Playlist.find(query).select("-_id");
+        const filteredPlaylists = await Playlist.find(query);
         if (!filteredPlaylists.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req)
             next(ApiError.resourceNotFound(message))
@@ -92,7 +92,7 @@ const removeTrackFromPlaylist = async (req, res, next) => {
         return
     }
 
-    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id != trackId)
+    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id !== trackId)
     await requestedPlaylist.save()
     res.status(204).send({})
 }
