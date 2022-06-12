@@ -43,9 +43,8 @@ const getPlaylists = async (req, res, next) => {
 
 const getPlaylist = async (req, res, next) => {
     const playlistId = req.params.id
-    const requestedPlaylist = await Playlist.findById(playlistId).then((playlist) => {
-        playlist.populate('tracks');
-    })
+    const requestedPlaylist = await Playlist.findById(playlistId);
+    await requestedPlaylist.populate('tracks');
     if (requestedPlaylist == null) {
         next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
         return
