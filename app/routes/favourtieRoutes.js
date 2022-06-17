@@ -6,6 +6,6 @@ const favouritesController = require("../controllers/favouritesController");
 
 router.get("/:uid", favouritesController.getAllFavouritesSongs)
 router.post("/:uid/add-song", favouritesController.addSongToFavourites);
-router.delete("/:uid/delete-song", favouritesController.removeSongFromFavourites);
+router.delete("/:uid/remove-song", favouritesController.removeSongFromFavourites);
 
 module.exports = router;
