@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const albumControllers = require("../controllers/albumController");
-const {songIntoAlbumInputSchema} = require("../schemas/songsInputSchema");
-const {albumInputSchema} = require("../schemas/albumsInputSchema");
+const {songIntoAlbumInputSchema, albumInputSchema} = require("../schemas/songsInputSchema");
 
 const {protectUrlByAlbumOwner} = require("../middleware/authorizationMiddleware");
 const validateReqBody = require("../middleware/bodyValidationMiddleware");
