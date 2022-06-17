@@ -9,7 +9,8 @@ const favouriteSchema = mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Song',
         required: true,
-        default: []
+        default: [],
+        unique: true
     }
 });
 
