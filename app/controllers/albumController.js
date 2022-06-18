@@ -1,7 +1,11 @@
 const ApiError = require("../errors/apiError");
+const QueryParser = require('../utils/queryParser');
+
 const Song = require("../models/songModel");
 const Album = require("../models/albumModel");
-const QueryParser = require('../utils/queryParser');
+const Playlist = require("../models/playlistModel");
+const Favourite = require("../models/favouritesModel");
+
 
 const getAllAlbumsByQuery = async (req, res, next) => {
 
@@ -102,9 +106,84 @@ const createSongAndAddToAlbum = async (req, res, next) => {
     res.status(201).send({})
 }
 
+const deleteForeignKeys = async (listOfIds) => {
+    for (const id of listOfIds) {
+        await Playlist.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
+        await Favourite.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
+    }
+}
+
+const editAlbum = async (req, res, next) => {
+    const albumId = req.params.id;
+
+    if (res.missingFieldsInBody.length > 0) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
+    const {title, tracks, tier, genre} = req.body;
+    try {
+        const albumToEdit = await Album.find({"id": albumId});
+
+        if (albumToEdit === null) {
+            next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
+            return;
+        }
+
+        // Update to the albums tracks
+        const albumSongsId = albumToEdit.tracks.map((track) => track._id);
+        const songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
+        albumToEdit.tracks.apply((song) => {
+            if (songsToDelete.includes(song._id)) {
+                song.remove();
+            }
+        });
+
+        // Update to the album values
+        Object.assign(albumToEdit, {title, tier, genre});
+        await albumToEdit.save();
+
+        // Delete dependencies of deleted songs
+        await deleteForeignKeys(songsToDelete);
+
+        res.status(204).send({})
+    } catch (err) {
+        console.log(err);
+        next(ApiError.internalError(`Error trying to update album with ${albumId}`));
+        return;
+    }
+}
+
+const deleteAlbum = async (req, res, next) => {
+    const albumId = req.params.id
+
+    const albumToDelete = await Album.find({"id": albumId});
+    if (albumToDelete === null) {
+        next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
+        return;
+    }
+    try {
+        const listOfDependencies = await albumToDelete.tracks.map((track => track._id));
+
+        for (const song in albumToDelete.tracks) {
+            await song.remove();
+        }
+        await albumToDelete.remove()
+
+        await deleteForeignKeys(listOfDependencies);
+        res.status(204).json({});
+    } catch (err) {
+        console.log(err);
+        next(ApiError.internalError(`Error trying to delete album with ${albumId}`));
+        return;
+    }
+}
+
 module.exports = {
     getAllAlbumsByQuery,
     getAlbumById,
     createAlbum,
-    createSongAndAddToAlbum
+    createSongAndAddToAlbum,
+    deleteAlbum,
+    editAlbum
 };
