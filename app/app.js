@@ -16,14 +16,16 @@ app.use(express.urlencoded());
 const songRouter = require("./routes/songRoutes");
 const albumRouter = require("./routes/albumRoutes");
 const playlistRouter = require("./routes/playlistRoutes");
+const favouriteRouter = require("./routes/favouriteRoutes");
 
 app.use("/songs", songRouter);
 app.use("/albums", albumRouter);
 app.use("/playlists", playlistRouter);
+app.use("/favourites", favouriteRouter);
 
 // Example route
 app.get("/", (req, res) => {
-  res.send("Initial setup");
+    res.send("Initial setup");
 });
 
 // Error handling middlewares

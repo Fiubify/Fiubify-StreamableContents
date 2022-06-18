@@ -7,6 +7,16 @@ const Album = require("../models/albumModel");
 const Playlist = require("../models/playlistModel");
 
 //TODO WARNING Change hardcoded path
+const validateUserUidWithToken = async (token, uid) => {
+    const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/uid", {
+        token: token,
+        uid: uid
+    });
+
+    return response;
+}
+
+//TODO WARNING Change hardcoded path
 const validateUserWithToken = async (token, artistId) => {
     const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/user", {
         token: token,
@@ -16,6 +26,7 @@ const validateUserWithToken = async (token, artistId) => {
     return response
 };
 
+//TODO WARNING Change hardcoded path
 const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
     const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/user", {
         token: token,
@@ -23,6 +34,19 @@ const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
     });
 
     return response
+}
+
+//TODO WARNING Change hardcoded path
+const protectUrlByUid = async (req, res, next) => {
+    const uid = req.params.uid;
+    const {token} = req.body.token;
+
+    const validation = await validateUserUidWithToken(token, uid);
+    if (validation.status !== 200) {
+        return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+    } else {
+        next();
+    }
 }
 
 
@@ -81,6 +105,7 @@ const protectUrlByPlaylistOwner = async (req, res, next) => {
 }
 
 module.exports = {
+    protectUrlByUid,
     protectUrlBySongOwner,
     protectUrlByAlbumOwner,
     protectUrlByPlaylistOwner
