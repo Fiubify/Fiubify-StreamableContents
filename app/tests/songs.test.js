@@ -93,6 +93,7 @@ const newSongToAddTest = {
     tier: "Free",
     genre: "Folklore",
     description: "",
+    disabled: false
 }
 
 let testingSongsId = []
