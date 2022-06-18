@@ -102,9 +102,23 @@ const createSongAndAddToAlbum = async (req, res, next) => {
     res.status(201).send({})
 }
 
+// TODO Delete from playlists
+const deleteAlbum = async (req, res, next) => {
+    const albumId = req.params.id
+
+    const albumToDelete = await Album.find({"uid": albumId});
+    for (const song in albumToDelete.tracks) {
+        await song.remove();
+    }
+
+    await albumToDelete.remove()
+    res.status(204).json({});
+}
+
 module.exports = {
     getAllAlbumsByQuery,
     getAlbumById,
     createAlbum,
-    createSongAndAddToAlbum
+    createSongAndAddToAlbum,
+    deleteAlbum
 };
