@@ -1,6 +1,6 @@
 const internalServicesUrls = {
-    uidAuthValidationUrl: "https://fiubify-users-staging.herokuapp.com/validate/uid",
-    userAuthValidationUrl: "https://fiubify-users-staging.herokuapp.com/validate/user"
+    uidAuthValidationUrl: process.env.UID_AUTH_URL || "https://fiubify-users-staging.herokuapp.com/validate/uid",
+    userAuthValidationUrl: process.env.USER_AUTH_URL || "https://fiubify-users-staging.herokuapp.com/validate/user"
 }
 
 module.exports = internalServicesUrls
