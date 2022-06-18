@@ -16,7 +16,7 @@ app.use(express.urlencoded());
 const songRouter = require("./routes/songRoutes");
 const albumRouter = require("./routes/albumRoutes");
 const playlistRouter = require("./routes/playlistRoutes");
-const favouriteRouter = require("./routes/favourtieRoutes");
+const favouriteRouter = require("./routes/favouriteRoutes");
 
 app.use("/songs", songRouter);
 app.use("/albums", albumRouter);
