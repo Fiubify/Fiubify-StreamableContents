@@ -113,11 +113,51 @@ const deleteForeignKeys = async (listOfIds) => {
     }
 }
 
-// TODO Delete from playlists
+const editAlbum = async (req, res, next) => {
+    const albumId = req.params.id;
+
+    if (res.missingFieldsInBody.length > 0) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
+    const {title, tracks, tier, genre} = req.body;
+    try {
+        const albumToEdit = await Album.find({"id": albumId});
+
+        if (albumToEdit === null) {
+            next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
+            return;
+        }
+
+        // Update to the albums tracks
+        const albumSongsId = albumToEdit.tracks.map((track) => track._id);
+        const songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
+        albumToEdit.tracks.apply((song) => {
+            if (songsToDelete.includes(song._id)) {
+                song.remove();
+            }
+        });
+
+        // Update to the album values
+        Object.assign(albumToEdit, {title, tier, genre});
+        await albumToEdit.save();
+
+        // Delete dependencies of deleted songs
+        await deleteForeignKeys(songsToDelete);
+
+        res.status(204).send({})
+    } catch (err) {
+        console.log(err);
+        next(ApiError.internalError(`Error trying to update album with ${albumId}`));
+        return;
+    }
+}
+
 const deleteAlbum = async (req, res, next) => {
     const albumId = req.params.id
 
-    const albumToDelete = await Album.find({"uid": albumId});
+    const albumToDelete = await Album.find({"id": albumId});
     if (albumToDelete === null) {
         next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
         return;
@@ -137,7 +177,6 @@ const deleteAlbum = async (req, res, next) => {
         next(ApiError.internalError(`Error trying to delete album with ${albumId}`));
         return;
     }
-
 }
 
 module.exports = {
@@ -145,5 +184,6 @@ module.exports = {
     getAlbumById,
     createAlbum,
     createSongAndAddToAlbum,
-    deleteAlbum
+    deleteAlbum,
+    editAlbum
 };
