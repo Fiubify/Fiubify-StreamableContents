@@ -1,14 +1,14 @@
 const axios = require("axios");
 
 const ApiError = require("../errors/apiError");
+const InternalServicesUrls = require("../services/internalServicesAPI");
 
 const Song = require("../models/songModel");
 const Album = require("../models/albumModel");
 const Playlist = require("../models/playlistModel");
 
-//TODO WARNING Change hardcoded path
 const validateUserUidWithToken = async (token, uid) => {
-    const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/uid", {
+    const response = await axios.post(InternalServicesUrls.uidAuthValidationUrl, {
         token: token,
         uid: uid
     });
@@ -16,9 +16,9 @@ const validateUserUidWithToken = async (token, uid) => {
     return response;
 }
 
-//TODO WARNING Change hardcoded path
+
 const validateUserWithToken = async (token, artistId) => {
-    const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/user", {
+    const response = await axios.post(InternalServicesUrls.userAuthValidationUrl, {
         token: token,
         userId: artistId
     });
@@ -26,9 +26,8 @@ const validateUserWithToken = async (token, artistId) => {
     return response
 };
 
-//TODO WARNING Change hardcoded path
 const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
-    const response = await axios.post("https://fiubify-users-staging.herokuapp.com/validate/user", {
+    const response = await axios.post(InternalServicesUrls.userAuthValidationUrl, {
         token: token,
         usersId: arrayOfownersId
     });
@@ -36,7 +35,6 @@ const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
     return response
 }
 
-//TODO WARNING Change hardcoded path
 const protectUrlByUid = async (req, res, next) => {
     const uid = req.params.uid;
     const {token} = req.body.token;
