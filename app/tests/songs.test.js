@@ -41,6 +41,7 @@ const testingSongs = [
         tier: "Free",
         genre: "Electronic",
         description: "",
+        disabled: false
     },
     {
         title: "2",
@@ -51,6 +52,7 @@ const testingSongs = [
         tier: "Premium",
         genre: "Pop",
         description: "",
+        disabled: false
     },
     {
         title: "3",
@@ -61,6 +63,7 @@ const testingSongs = [
         tier: "Free",
         genre: "Pop",
         description: "",
+        disabled: false
     },
     {
         title: "4",
@@ -71,6 +74,7 @@ const testingSongs = [
         tier: "Free",
         genre: "Folklore",
         description: "",
+        disabled: false
     },
     {
         title: "el farsante",
@@ -81,6 +85,7 @@ const testingSongs = [
         tier: "Free",
         genre: "Trap",
         description: "",
+        disabled: false
     },
 ];
 
@@ -93,6 +98,7 @@ const newSongToAddTest = {
     tier: "Free",
     genre: "Folklore",
     description: "",
+    disabled: false
 }
 
 let testingSongsId = []

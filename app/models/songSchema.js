@@ -37,6 +37,10 @@ const songSchema = mongoose.Schema({
     description: {
         type: String,
     },
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = songSchema;

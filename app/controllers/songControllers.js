@@ -70,8 +70,48 @@ const createSong = async (req, res, next) => {
     }
 };
 
+const blockSong = async (req, res, next) => {
+    const songId = req.params.id;
+
+    try {
+        const songToBlock = await Song.findById(songId);
+
+        if (songToBlock === null) {
+            next(ApiError.resourceNotFound(`Song with id ${songId} doesn't exists`));
+            return;
+        }
+
+        await songToBlock.updateOne({disabled: true});
+        res.status(204).json({});
+    } catch (err) {
+        next(ApiError.internalError("Internal error when trying to block song"));
+        return;
+    }
+}
+
+const unblockSong = async (req, res, next) => {
+    const songId = req.params.id;
+
+    try {
+        const songToUnblock = await Song.findById(songId);
+
+        if (songToUnblock === null) {
+            next(ApiError.resourceNotFound(`Song with id ${songId} doesn't exists`));
+            return;
+        }
+
+        await songToUnblock.updateOne({disabled: false});
+        res.status(204).json({});
+    } catch (err) {
+        next(ApiError.internalError("Internal error when trying to block song"));
+        return;
+    }
+}
+
 module.exports = {
     getAllSongsByQuery,
     getSongById,
     createSong,
+    unblockSong,
+    blockSong
 };
