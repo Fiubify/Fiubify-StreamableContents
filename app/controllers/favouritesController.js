@@ -23,6 +23,11 @@ const getAllFavouritesSongs = async (req, res, next) => {
 
 
 const addSongToFavourites = async (req, res, next) => {
+    if (res.missingFieldsInBody.length > 0) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+
     const userUid = req.params.uid;
     const {songId} = req.body;
 
@@ -38,6 +43,11 @@ const addSongToFavourites = async (req, res, next) => {
 };
 
 const removeSongFromFavourites = async (req, res, next) => {
+    if (res.missingFieldsInBody.length > 0) {
+        next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
+        return;
+    }
+    
     const userUid = req.params.uid;
     const {songId} = req.body;
 
