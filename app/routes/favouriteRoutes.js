@@ -3,7 +3,7 @@ const router = express.Router();
 
 const favouritesController = require("../controllers/favouritesController");
 const {protectUrlByUid} = require("../middleware/authorizationMiddleware");
-const {validateReqBody} = require("../middleware/bodyValidationMiddleware");
+const validateReqBody = require("../middleware/bodyValidationMiddleware");
 
 const {favouriteInputSongSchema} = require("../schemas/favouritesSchema");
 
