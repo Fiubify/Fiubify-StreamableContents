@@ -121,7 +121,7 @@ const editAlbum = async (req, res, next) => {
         return;
     }
 
-    const {title, tracks, tier, genre} = req.body;
+    const {tracks} = req.body;
     try {
         const albumToEdit = await Album.find({"id": albumId});
 
