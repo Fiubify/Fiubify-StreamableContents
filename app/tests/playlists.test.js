@@ -159,7 +159,7 @@ describe("GET /playlists/:id", () => {
 
 describe("POST /playlists/:id/edit", () => {
 
-    it("Successfully edits playlist", async() => {
+    it("Successfully edits playlist", async () => {
         const request_body = {
             title: "Jazzy",
             description: "An open jazz playlist",
@@ -168,7 +168,7 @@ describe("POST /playlists/:id/edit", () => {
         }
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/edit`)
-                                           .send(request_body)
+            .send(request_body)
 
         const playlist = await Playlist.findById(testingPlaylistsIds[0])
 
@@ -196,7 +196,7 @@ describe("POST /playlists/:id/add-track", () => {
         const trackId = await createTestTrack(track)
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/add-track`)
-                                           .send({trackId: trackId})
+            .send({trackId: trackId})
 
         const playlist = await Playlist.findById(testingPlaylistsIds[0])
 
@@ -207,12 +207,12 @@ describe("POST /playlists/:id/add-track", () => {
 
 describe("POST /playlists/:id/remove-track", () => {
 
-    it.skip("Removes track from playlist", async() => {
+    it.skip("Removes track from playlist", async () => {
         const track = await Song.find()
         const trackId = track[0]._id
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/remove-track`)
-                                           .send({trackId: trackId})
+            .send({trackId: trackId})
 
         const playlist = await Playlist.findById(testingPlaylistsIds[0])
 
