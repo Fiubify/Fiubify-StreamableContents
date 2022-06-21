@@ -121,7 +121,7 @@ const editAlbum = async (req, res, next) => {
         return;
     }
 
-    const {title, tracks, tier, genre} = req.body;
+    const {tracks} = req.body;
     try {
         const albumToEdit = await Album.find({"id": albumId});
 
@@ -140,7 +140,8 @@ const editAlbum = async (req, res, next) => {
         });
 
         // Update to the album values
-        Object.assign(albumToEdit, {title, tier, genre});
+        delete req.body.tracks;
+        Object.assign(albumToEdit, req.body);
         await albumToEdit.save();
 
         // Delete dependencies of deleted songs
