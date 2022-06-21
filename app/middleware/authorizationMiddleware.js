@@ -89,7 +89,13 @@ const protectUrlByAlbumOwner = async (req, res, next) => {
 
     const userValidationResult = await validateUserUidWithToken(token, album.artistId);
     if (userValidationResult.status !== 200) {
-        ApiError.forbiddenError(`User isn't owner of album with id: ${albumId}`).constructResponse(res);
+        if (userValidationResult.status === 403) {
+            return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+        } else if (userValidationResult.status === 400) {
+            return ApiError.invalidArguments('Invalid uid passed')
+        } else {
+            return ApiError.internalError('Error with auth')
+        }
     } else {
         next();
     }
