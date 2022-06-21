@@ -80,7 +80,7 @@ const createSongAndAddToAlbum = async (req, res, next) => {
     }
 
     const albumId = req.params.id;
-    const {title, artistId, duration, url, genre, description} = req.body;
+    const {title, artistId, duration, url, genre, description, tier} = req.body;
 
     const requestedAlbum = await Album.findById(albumId);
 
@@ -95,7 +95,7 @@ const createSongAndAddToAlbum = async (req, res, next) => {
         albumId: albumId,
         duration: duration,
         url: url,
-        tier: requestedAlbum.tier,
+        tier: tier,
         genre: genre,
         description: description,
     });
