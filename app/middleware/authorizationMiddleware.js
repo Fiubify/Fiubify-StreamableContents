@@ -76,7 +76,7 @@ const protectUrlByAlbumOwner = async (req, res, next) => {
         return;
     }
 
-    const userValidationResult = await validateUserWithToken(token, album.artistId);
+    const userValidationResult = await validateUserUidWithToken(token, album.artistId);
     if (userValidationResult.status !== 200) {
         ApiError.forbiddenError(`User isn't owner of album with id: ${albumId}`).constructResponse(res);
     } else {
