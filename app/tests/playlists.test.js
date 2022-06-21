@@ -207,9 +207,9 @@ describe("POST /playlists/:id/add-track", () => {
 
 describe("POST /playlists/:id/remove-track", () => {
 
-    it.skip("Removes track from playlist", async () => {
-        const track = await Song.find()
-        const trackId = track[0]._id
+    it("Removes track from playlist", async () => {
+        const playlistToTest = await Playlist.findById(testingPlaylistsIds[0])
+        const trackId = playlistToTest.tracks[0]._id
 
         const response = await request(app).post(`/playlists/${testingPlaylistsIds[0]}/remove-track`)
             .send({trackId: trackId})
