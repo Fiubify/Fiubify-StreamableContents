@@ -8,12 +8,16 @@ const Album = require("../models/albumModel");
 const Playlist = require("../models/playlistModel");
 
 const validateUserUidWithToken = async (token, uid) => {
-    const response = await axios.post(InternalServicesUrls.uidAuthValidationUrl, {
-        token: token,
-        uid: uid
-    });
+    try {
+        const response = await axios.post(InternalServicesUrls.uidAuthValidationUrl, {
+            token: token,
+            uid: uid
+        });
 
-    return response;
+        return response
+    } catch (e) {
+        return e
+    }
 }
 
 
@@ -41,7 +45,14 @@ const protectUrlByUid = async (req, res, next) => {
 
     const validation = await validateUserUidWithToken(token, uid);
     if (validation.status !== 200) {
-        return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+        if (validation.status === 403) {
+            return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+        } else if (validation.status === 400) {
+            return ApiError.invalidArguments('Invalid uid passed')
+        } else {
+            return ApiError.internalError('Error with auth')
+        }
+
     } else {
         next();
     }
