@@ -28,6 +28,7 @@ const testingSongData = {
     url: "./5",
     genre: "Folklore",
     description: "",
+    tier: "Free"
 }
 
 const testAlbums = [
@@ -175,7 +176,7 @@ describe("POST /albums/:id/add-song", () => {
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
     })
 
-    it("Create a sing with missing fields and add to album", async () => {
+    it("Create a song with missing fields and add to album", async () => {
         let testingSongDataWithoutField = Object.assign(testingSongData);
         testingSongDataWithoutField.duration = undefined;
         const response = await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongDataWithoutField);

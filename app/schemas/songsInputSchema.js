@@ -15,7 +15,8 @@ const songIntoAlbumInputSchema = {
     'duration': {'required': true},
     'url': {'required': true},
     'genre': {'required': true},
-    'description': {}
+    'description': {},
+    'tier': {'required': true}
 }
 
 module.exports = {
