@@ -69,6 +69,7 @@ const createAlbum = async (req, res, next) => {
 
         res.status(201).send({})
     } catch (err) {
+        console.log(err)
         next(ApiError.invalidArguments("Invalid arguments passed"));
     }
 }

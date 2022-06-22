@@ -16,6 +16,7 @@ const validateUserUidWithToken = async (token, uid) => {
 
         return response
     } catch (e) {
+        console.log(e);
         return e
     }
 }
@@ -46,11 +47,11 @@ const protectUrlByUid = async (req, res, next) => {
     const validation = await validateUserUidWithToken(token, uid);
     if (validation.status !== 200) {
         if (validation.status === 403) {
-            return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+            next(ApiError.forbiddenError(`User token doesn't belong to sent uid`));
         } else if (validation.status === 400) {
-            return ApiError.invalidArguments('Invalid uid passed')
+            next(ApiError.invalidArguments('Invalid uid passed'));
         } else {
-            return ApiError.internalError('Error with auth')
+            next(ApiError.internalError('Error with auth'));
         }
 
     } else {
@@ -90,11 +91,11 @@ const protectUrlByAlbumOwner = async (req, res, next) => {
     const userValidationResult = await validateUserUidWithToken(token, album.artistId);
     if (userValidationResult.status !== 200) {
         if (userValidationResult.status === 403) {
-            return ApiError.forbiddenError(`User token doesn't belong to sent uid`);
+            next(ApiError.forbiddenError(`User token doesn't belong to sent uid`));
         } else if (userValidationResult.status === 400) {
-            return ApiError.invalidArguments('Invalid uid passed')
+            next(ApiError.invalidArguments('Invalid uid passed'));
         } else {
-            return ApiError.internalError('Error with auth')
+            next(ApiError.internalError('Error with auth'));
         }
     } else {
         next();
