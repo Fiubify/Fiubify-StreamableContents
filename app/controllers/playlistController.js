@@ -22,13 +22,13 @@ const createPlaylist = async (req, res, next) => {
 }
 
 const getPlaylists = async (req, res, next) => {
-    const queryParamsSubset = ['owners.id']
-    const queryParamsContained = ['title']
-    const queryParser = new QueryParser(queryParamsSubset, queryParamsContained)
-
-    const query = queryParser.parseRequest(req);
-
     try {
+        const queryParamsSubset = ['owners.id']
+        const queryParamsContained = ['title']
+        const queryParser = new QueryParser(queryParamsSubset, queryParamsContained)
+
+        const query = queryParser.parseRequest(req);
+
         const filteredPlaylists = await Playlist.find(query);
         if (!filteredPlaylists.length && Object.keys(query).length !== 0) {
             const message = queryParser.getErrorMessageNotFound(req)
@@ -42,59 +42,83 @@ const getPlaylists = async (req, res, next) => {
 }
 
 const getPlaylist = async (req, res, next) => {
-    const playlistId = req.params.id
-    const requestedPlaylist = await Playlist.findById(playlistId);
-    await requestedPlaylist.populate('tracks');
-    if (requestedPlaylist == null) {
-        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
-        return
+    try {
+        const playlistId = req.params.id
+        const requestedPlaylist = await Playlist.findById(playlistId);
+        await requestedPlaylist.populate('tracks');
+        if (requestedPlaylist == null) {
+            next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+            return
+        }
+
+        res.status(200).json({data: requestedPlaylist})
+    } catch (error) {
+        console.error(error)
+        next(ApiError.internalError("HAGAN LOS CATCH"))
     }
 
-    res.status(200).json({data: requestedPlaylist})
 }
 
 const editPlaylist = async (req, res, next) => {
-    const playlistId = req.params.id
+    try {
+        const playlistId = req.params.id
 
-    let requestedPlaylist = await Playlist.findById(playlistId)
-    if (!requestedPlaylist) {
-        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
-        return
+        let requestedPlaylist = await Playlist.findById(playlistId)
+        if (!requestedPlaylist) {
+            next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+            return
+        }
+    
+        Object.assign(requestedPlaylist, req.body)
+        await requestedPlaylist.save()
+        res.status(204).send({})    
+    } catch (error) {
+        console.error(error)
+        next(ApiError.internalError("HAGAN LOS CATCH"))
     }
-
-    Object.assign(requestedPlaylist, req.body)
-    await requestedPlaylist.save()
-    res.status(204).send({})
+    
 }
 
 const addTrackToPlaylist = async (req, res, next) => {
-    const playlistId = req.params.id
-    const trackId = req.body.trackId
-
-    const requestedPlaylist = await Playlist.findById(playlistId)
-    if (!requestedPlaylist) {
-        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
-        return
+    try {
+        const playlistId = req.params.id
+        const trackId = req.body.trackId
+    
+        const requestedPlaylist = await Playlist.findById(playlistId)
+        if (!requestedPlaylist) {
+            next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+            return
+        }
+    
+        requestedPlaylist.tracks.push(trackId)
+        await requestedPlaylist.save()
+        res.status(204).send({})    
+    } catch (error) {
+        console.error(error)
+        next(ApiError.internalError("HAGAN LOS CATCH"))
     }
-
-    requestedPlaylist.tracks.push(trackId)
-    await requestedPlaylist.save()
-    res.status(204).send({})
+    
 }
 
 const removeTrackFromPlaylist = async (req, res, next) => {
-    const playlistId = req.params.id
-    const trackId = req.body.trackId
-
-    let requestedPlaylist = await Playlist.findById(playlistId)
-    if (!requestedPlaylist) {
-        next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
-        return
+    try {
+        const playlistId = req.params.id
+        const trackId = req.body.trackId
+    
+        let requestedPlaylist = await Playlist.findById(playlistId)
+        if (!requestedPlaylist) {
+            next(ApiError.resourceNotFound(`Playlist with id ${playlistId} doesn't exist`))
+            return
+        }
+    
+        requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id !== trackId)
+        await requestedPlaylist.save()
+        res.status(204).send({})    
+    } catch (error) {
+        console.error(error)
+        next(ApiError.internalError("HAGAN LOS CATCH"))
     }
-
-    requestedPlaylist.tracks = requestedPlaylist.tracks.filter(track => track._id !== trackId)
-    await requestedPlaylist.save()
-    res.status(204).send({})
+    
 }
 
 module.exports = {
