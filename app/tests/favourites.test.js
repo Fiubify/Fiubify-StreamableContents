@@ -153,6 +153,38 @@ describe("POST /favourites/:uid/add-song", () => {
         expect(response2.body.data).toHaveLength(1);
         expect(response2.body.data[0]).toEqual(trackId);
     })
+
+    it("Add track 2 times to favourite's track only adds 1 time", async () => {
+        let track = {
+            title: "There Will Never Be Another You",
+            artistId: testingArtistsId[0],
+            albumId: testingAlbumsId[0],
+            duration: 374,
+            url: "./there-will-never-be-another-you",
+            tier: "Free",
+            genre: "Jazz",
+            description: "",
+        }
+        const trackId = await createTestTrack(track);
+
+        const response = await request(app).post(`/favourites/${testingUsersUId[2]}/add-song`)
+            .send({songId: trackId})
+
+        expect(response.status).toEqual(201);
+
+        const response2 = await request(app).get(`/favourites/${testingUsersUId[2]}`);
+        expect(response2.status).toEqual(200);
+        expect(response2.body.data).toHaveLength(1);
+
+        const response3 = await request(app).post(`/favourites/${testingUsersUId[2]}/add-song`)
+            .send({songId: trackId})
+
+        expect(response3.status).toEqual(201);
+
+        const response4 = await request(app).get(`/favourites/${testingUsersUId[2]}`);
+        expect(response4.status).toEqual(200);
+        expect(response4.body.data).toHaveLength(1);
+    })
 })
 
 describe("DELETE /favourites/:uid/remove-song", () => {
