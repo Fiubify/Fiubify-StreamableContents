@@ -151,7 +151,7 @@ describe("POST /favourites/:uid/add-song", () => {
         const response2 = await request(app).get(`/favourites/${testingUsersUId[2]}`);
         expect(response2.status).toEqual(200);
         expect(response2.body.data).toHaveLength(1);
-        expect(response2.body.data[0]).toEqual(trackId);
+        expect(response2.body.data[0]._id).toEqual(trackId);
     })
 
     it("Add track 2 times to favourite's track only adds 1 time", async () => {
@@ -189,19 +189,19 @@ describe("POST /favourites/:uid/add-song", () => {
 
 describe("DELETE /favourites/:uid/remove-song", () => {
 
-    it("Adds track to favourite's track", async () => {
+    it("Delete track from favourites", async () => {
         const response = await request(app).get(`/favourites/${testingUsersUId[1]}`);
         expect(response.status).toEqual(200);
         expect(response.body.data).toHaveLength(2);
 
         const response2 = await request(app).delete(`/favourites/${testingUsersUId[1]}/remove-song`)
-            .send({songId: response.body.data[0]})
+            .send({songId: response.body.data[0]._id})
 
         expect(response2.status).toEqual(204);
 
         const response3 = await request(app).get(`/favourites/${testingUsersUId[1]}`);
         expect(response3.status).toEqual(200);
         expect(response3.body.data).toHaveLength(1);
-        expect(response3.body.data[0]).toEqual(response.body.data[1]);
+        expect(response3.body.data[0]._id).toEqual(response.body.data[1]._id);
     })
 })

@@ -10,7 +10,7 @@ async function fetchFavourites(uid) {
         await newFav.save();
         return [];
     } else {
-        userFavourites.populate('tracks');
+        await userFavourites.populate('tracks');
         return userFavourites.tracks;
     }
 }
@@ -39,14 +39,13 @@ const addSongToFavourites = async (req, res, next) => {
 
     try {
         const tracks = await fetchFavourites(userUid);
-        if (!(await tracks).includes(songId)) {
+        if (!tracks.map((track) => track._id.toString()).includes(songId)) {
             await Favourites.findOneAndUpdate({"uid": userUid}, {$push: {"tracks": songId}}, {"upsert": true});
         }
         res.status(201).json({});
     } catch (error) {
         console.log(error);
         next(ApiError.internalError(`Internal error when adding song ${songId} on favourites of user ${userUid}`));
-        return;
     }
 
 };
@@ -61,11 +60,10 @@ const removeSongFromFavourites = async (req, res, next) => {
     const {songId} = req.body;
 
     try {
-        await Favourites.findOneAndUpdate({"uid": userUid}, {$pull: {"tracks": songId}});
+        await Favourites.findOneAndUpdate({"uid": userUid}, {$pull: {tracks: songId}});
         res.status(204).json({});
     } catch (error) {
         next(ApiError.internalError(`Internal error when removing song ${songId} on favourites of user ${userUid}`));
-        return;
     }
 }
 
