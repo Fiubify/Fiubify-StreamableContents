@@ -44,19 +44,25 @@ const protectUrlByUid = async (req, res, next) => {
     const uid = req.params.uid;
     const {token} = req.body.token;
 
-    const validation = await validateUserUidWithToken(token, uid);
-    if (validation.status !== 200) {
-        if (validation.status === 403) {
-            next(ApiError.forbiddenError(`User token doesn't belong to sent uid`));
-        } else if (validation.status === 400) {
-            next(ApiError.invalidArguments('Invalid uid passed'));
+    try {
+        const validation = await validateUserUidWithToken(token, uid);
+        if (validation.status !== 200) {
+            if (validation.status === 403) {
+                next(ApiError.forbiddenError(`User token doesn't belong to sent uid`));
+            } else if (validation.status === 400) {
+                next(ApiError.invalidArguments('Invalid uid passed'));
+            } else {
+                next(ApiError.internalError('Error with auth'));
+            }
+    
         } else {
-            next(ApiError.internalError('Error with auth'));
-        }
-
-    } else {
-        next();
+            next();
+        }    
+    } catch (error) {
+        next(ApiError.internalError('Error'))
     }
+
+    
 }
 
 
