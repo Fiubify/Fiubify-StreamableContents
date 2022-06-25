@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
 const favouriteSchema = mongoose.Schema({
-    userUid: {
+    uid: {
         type: String,
+        required: true,
         unique: true
     },
     tracks: {
@@ -10,7 +11,6 @@ const favouriteSchema = mongoose.Schema({
         ref: 'Song',
         required: true,
         default: [],
-        unique: true
     }
 });
 
