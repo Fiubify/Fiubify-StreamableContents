@@ -121,20 +121,18 @@ const createSongAndAddToAlbum = async (req, res, next) => {
 }
 
 const deleteForeignKeys = async (listOfIds) => {
-    try {
-        for (const id of listOfIds) {
-            await Playlist.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
-            await Favourite.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
-        }
-    } catch (error) {
-        console.error(error)
-        next(ApiError.internalError("HAGAN LOS CATCH"))
+    
+    for (const id of listOfIds) {
+        await Playlist.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
+        await Favourite.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
     }
+    
 }
 
 const editAlbum = async (req, res, next) => {
+    const albumId = req.params.id;
+
     try {
-        const albumId = req.params.id;
 
         if (res.missingFieldsInBody.length > 0) {
             next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
@@ -176,8 +174,8 @@ const editAlbum = async (req, res, next) => {
 }
 
 const deleteAlbum = async (req, res, next) => {
+    const albumId = req.params.id
     try {
-        const albumId = req.params.id
 
         const albumToDelete = await Album.find({"id": albumId});
         if (albumToDelete === null) {
