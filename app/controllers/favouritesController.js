@@ -2,7 +2,7 @@ const Favourites = require("../models/favouritesModel");
 const ApiError = require("../errors/apiError")
 
 async function fetchFavourites(uid) {
-    const userFavourites = await Favourites.findOne({"uid": uid});
+    const userFavourites = await Favourites.findOne({"uid": uid}).exec();
     if (userFavourites == null) {
         const newFav = new Favourites({
             uid: uid,
@@ -15,7 +15,7 @@ async function fetchFavourites(uid) {
     }
 }
 
-const getAllFavouritesSongs = async (req, res, next) => {
+const  getAllFavouritesSongs = async (req, res, next) => {
     const userUid = req.params.uid;
 
     try {
