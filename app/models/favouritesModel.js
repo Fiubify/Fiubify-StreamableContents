@@ -4,7 +4,7 @@ const favouriteSchema = mongoose.Schema({
     uid: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     tracks: {
         type: [mongoose.Schema.Types.ObjectId],
