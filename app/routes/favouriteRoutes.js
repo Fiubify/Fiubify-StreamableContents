@@ -7,6 +7,8 @@ const validateReqBody = require("../middleware/bodyValidationMiddleware");
 
 const {favouriteInputSongSchema} = require("../schemas/favouritesSchema");
 
+//TODO Agregar token a params para favorito
+
 if (process.env.NODE_ENV === "DEV") {
     router.get("/:uid", favouritesController.getAllFavouritesSongs)
     router.post("/:uid/add-song", validateReqBody(favouriteInputSongSchema), favouritesController.addSongToFavourites);

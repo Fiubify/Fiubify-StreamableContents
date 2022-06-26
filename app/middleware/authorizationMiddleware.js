@@ -43,7 +43,7 @@ const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
 const protectUrlByUid = async (req, res, next) => {
     try {
         const uid = req.params.uid;
-        const {token} = req.body.token;
+        const {token} = req.body;
 
         const validation = await validateUserUidWithToken(token, uid);
         if (validation.status !== 200) {
@@ -54,15 +54,15 @@ const protectUrlByUid = async (req, res, next) => {
             } else {
                 next(ApiError.internalError('Error with auth'));
             }
-    
+
         } else {
             next();
-        }    
+        }
     } catch (error) {
         next(ApiError.internalError('Error'))
     }
 
-    
+
 }
 
 

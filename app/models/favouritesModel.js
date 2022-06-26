@@ -5,7 +5,6 @@ const favouriteSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        sparse: true
     },
     tracks: {
         type: [mongoose.Schema.Types.ObjectId],
