@@ -198,6 +198,7 @@ describe("POST /songs/", () => {
     it("Check correct creation of song", async () => {
         const response = await request(app).post("/songs/").send(newSongToAddTest);
         expect(response.status).toEqual(201);
+        expect(response.body.data.title).toEqual(newSongToAddTest.title)
 
         const secondResponse = await request(app).get("/songs/")
         expect(secondResponse.body.data).toHaveLength(6);
