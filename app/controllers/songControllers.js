@@ -70,10 +70,9 @@ const createSong = async (req, res, next) => {
 
         await newSong.save();
 
-        res.status(201).send({});
+        res.status(201).send({data: newSong});
     } catch (err) {
         next(ApiError.invalidArguments(`Invalid arguments passed`));
-        return;
     }
 };
 
@@ -92,7 +91,6 @@ const blockSong = async (req, res, next) => {
         res.status(204).json({});
     } catch (err) {
         next(ApiError.internalError("Internal error when trying to block song"));
-        return;
     }
 }
 
@@ -111,7 +109,6 @@ const unblockSong = async (req, res, next) => {
         res.status(204).json({});
     } catch (err) {
         next(ApiError.internalError("Internal error when trying to block song"));
-        return;
     }
 }
 
