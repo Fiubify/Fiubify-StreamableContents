@@ -15,7 +15,7 @@ const getAllAlbumsByQuery = async (req, res, next) => {
 
         const query = queryParser.parseRequest(req);
 
-    
+
         const filteredAlbums = await Album.find(query).select("-__v");
 
         if (!filteredAlbums.length && Object.keys(query).length !== 0) {
@@ -39,21 +39,21 @@ const getAlbumById = async (req, res, next) => {
         const albumId = req.params.id;
 
         const requestedAlbum = await Album.findById(albumId).select("-_id -__v");
-    
+
         if (requestedAlbum == null) {
             next(ApiError.resourceNotFound(`Album with id ${albumId} doesn't exists`));
             return;
         }
-    
+
         res.status(200).json({
             data: requestedAlbum,
-        });        
+        });
     } catch (err) {
         console.log(err);
         next(ApiError.internalError("Internal error when getting albums"));
 
     }
-    
+
 };
 
 const createAlbum = async (req, res, next) => {
@@ -62,7 +62,7 @@ const createAlbum = async (req, res, next) => {
             next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
             return;
         }
-    
+
         const {title, artistId, tier, genre} = req.body;
 
         const newAlbum = new Album({
@@ -87,17 +87,17 @@ const createSongAndAddToAlbum = async (req, res, next) => {
             next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
             return;
         }
-    
+
         const albumId = req.params.id;
         const {title, artistId, duration, url, genre, description, tier} = req.body;
-    
+
         const requestedAlbum = await Album.findById(albumId);
-    
+
         if (!requestedAlbum) {
             next(ApiError.resourceNotFound(`Album with id ${albumId} not found`));
             return;
         }
-    
+
         const newSong = new Song({
             title: title,
             artistId: artistId,
@@ -108,10 +108,11 @@ const createSongAndAddToAlbum = async (req, res, next) => {
             genre: genre,
             description: description,
         });
-        await newSong.save();
-        requestedAlbum.tracks.push(newSong);
+
+        const newSongWithId = await newSong.save();
+        requestedAlbum.tracks.push(newSongWithId);
         await requestedAlbum.save();
-    
+
         res.status(201).send({})
     } catch (err) {
         console.log(err)
@@ -121,12 +122,12 @@ const createSongAndAddToAlbum = async (req, res, next) => {
 }
 
 const deleteForeignKeys = async (listOfIds) => {
-    
+
     for (const id of listOfIds) {
         await Playlist.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
         await Favourite.updateMany({tracks: {$in: {_id: id}}}, {$pullAll: {_id: id}})
     }
-    
+
 }
 
 const editAlbum = async (req, res, next) => {
@@ -140,7 +141,7 @@ const editAlbum = async (req, res, next) => {
         }
 
         const {tracks} = req.body;
-    
+
         const albumToEdit = await Album.find({"id": albumId});
 
         if (albumToEdit === null) {
@@ -181,8 +182,8 @@ const deleteAlbum = async (req, res, next) => {
         if (albumToDelete === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
             return;
-    }
-    
+        }
+
         const listOfDependencies = await albumToDelete.tracks.map((track => track._id));
 
         for (const song in albumToDelete.tracks) {
