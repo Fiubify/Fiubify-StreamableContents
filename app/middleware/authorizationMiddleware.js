@@ -32,7 +32,7 @@ const validateUserWithToken = async (token, artistId) => {
 };
 
 const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
-    const response = await axios.post(InternalServicesUrls.userAuthValidationUrl, {
+    const response = await axios.post(InternalServicesUrls.multipleUsersAuthValidationUrl, {
         token: token,
         usersId: arrayOfownersId
     });
