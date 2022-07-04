@@ -8,6 +8,7 @@ const Album = require("../models/albumModel");
 const Playlist = require("../models/playlistModel");
 
 const validateUserUidWithToken = async (token, uid) => {
+    console.log(uid);
     try {
         const response = await axios.post(InternalServicesUrls.uidAuthValidationUrl, {
             token: token,
