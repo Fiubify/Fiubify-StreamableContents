@@ -142,7 +142,7 @@ const editAlbum = async (req, res, next) => {
 
         const {tracks} = req.body;
 
-        const albumToEdit = await Album.find({"id": albumId}).select();
+        const albumToEdit = await Album.findOne({"id": albumId});
 
         if (albumToEdit === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
@@ -185,7 +185,7 @@ const deleteAlbum = async (req, res, next) => {
     const albumId = req.params.id
     try {
 
-        const albumToDelete = await Album.find({"id": albumId});
+        const albumToDelete = await Album.findOne({"id": albumId});
         if (albumToDelete === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
             return;
