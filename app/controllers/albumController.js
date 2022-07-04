@@ -150,21 +150,29 @@ const editAlbum = async (req, res, next) => {
         }
 
         // Update to the albums tracks
-        const albumSongsId = albumToEdit.tracks.map((track) => track._id);
-        const songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
-        albumToEdit.tracks.apply((song) => {
-            if (songsToDelete.includes(song._id)) {
-                song.remove();
-            }
-        });
+        let songsToDelete = [];
+        if (tracks) {
+            console.log(albumToEdit.tracks);
+            const albumSongsId = albumToEdit.tracks.map((track) => track._id);
+            songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
+            albumToEdit.tracks.apply((song) => {
+                if (songsToDelete.includes(song._id)) {
+                    song.remove();
+                }
+            });
+
+            delete req.body.tracks;
+        }
+
 
         // Update to the album values
-        delete req.body.tracks;
         Object.assign(albumToEdit, req.body);
         await albumToEdit.save();
 
         // Delete dependencies of deleted songs
-        await deleteForeignKeys(songsToDelete);
+        if (songsToDelete) {
+            await deleteForeignKeys(songsToDelete);
+        }
 
         res.status(204).send({})
     } catch (err) {
