@@ -142,7 +142,7 @@ const editAlbum = async (req, res, next) => {
 
         const {tracks} = req.body;
 
-        const albumToEdit = await Album.find({"id": albumId});
+        const albumToEdit = await Album.find({"id": albumId}).select();
 
         if (albumToEdit === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
@@ -152,7 +152,6 @@ const editAlbum = async (req, res, next) => {
         // Update to the albums tracks
         let songsToDelete = [];
         if (tracks) {
-            console.log(albumToEdit.tracks);
             const albumSongsId = albumToEdit.tracks.map((track) => track._id);
             songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
             albumToEdit.tracks.apply((song) => {
