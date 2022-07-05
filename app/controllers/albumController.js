@@ -154,7 +154,7 @@ const editAlbum = async (req, res, next) => {
         if (tracks) {
             const albumSongsId = albumToEdit.tracks.map((track) => track._id);
             songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
-            albumToEdit.tracks.apply((song) => {
+            albumToEdit.tracks.map((song) => {
                 if (songsToDelete.includes(song._id)) {
                     song.remove();
                 }
