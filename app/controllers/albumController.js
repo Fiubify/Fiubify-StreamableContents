@@ -140,7 +140,7 @@ const editAlbum = async (req, res, next) => {
             return;
         }
 
-        const {bodyTracks} = req.body;
+        const bodyTracks = req.body.tracks;
         const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
