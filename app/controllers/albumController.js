@@ -162,9 +162,7 @@ const editAlbum = async (req, res, next) => {
         await Album.updateOne({"_id": albumId}, {$set: {...req.body}});
 
         // Delete dependencies of deleted songs
-        console.log(songsToDelete)
         if (songsToDelete.length > 0) {
-            console.log("Hi");
             await deleteForeignKeys(songsToDelete);
         }
 

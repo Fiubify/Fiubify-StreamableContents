@@ -173,7 +173,6 @@ describe("POST /albums/:id/add-song", () => {
         expect(response.status).toEqual(201);
 
         const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
-        console.log(updatedAlbumResponse.body.data.tracks);
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
     })
 
