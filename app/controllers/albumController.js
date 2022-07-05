@@ -168,11 +168,11 @@ const editAlbum = async (req, res, next) => {
         await Album.updateOne({"id": albumId}, req.body);
 
         // Delete dependencies of deleted songs
-        console.log(songsToDelete)
-        if (songsToDelete.length > 0) {
-            console.log("Hi");
+        //console.log(songsToDelete)
+        //if (songsToDelete.length > 0) {
+        //    console.log("Hi");
             // await deleteForeignKeys(songsToDelete);
-        }
+        //}
 
         res.status(204).send({})
     } catch (err) {
