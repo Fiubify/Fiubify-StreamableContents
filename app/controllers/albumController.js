@@ -140,9 +140,8 @@ const editAlbum = async (req, res, next) => {
             return;
         }
 
-        const {tracks} = req.body;
-
-        const albumToEdit = await Album.findOne({"id": albumId});
+        const {bodyTracks} = req.body;
+        const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
@@ -151,25 +150,21 @@ const editAlbum = async (req, res, next) => {
 
         // Update to the albums tracks
         let songsToDelete = [];
-        if (tracks) {
-            const albumSongsId = albumToEdit.tracks.map((track) => track._id);
-            songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
-            albumToEdit.tracks.apply((song) => {
-                if (songsToDelete.includes(song._id)) {
-                    song.remove();
-                }
-            });
-
-            delete req.body.tracks;
+        if (bodyTracks) {
+            const albumSongsId = albumToEdit.tracks.map((track) => track._id.toString());
+            songsToDelete = albumSongsId.filter(x => !bodyTracks.includes(x));
         }
 
-
         // Update to the album values
-        Object.assign(albumToEdit, req.body);
-        await albumToEdit.save();
+        await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
+        delete req.body.tracks;
+        delete req.body.token;
+        await Album.updateOne({"_id": albumId}, {$set: {...req.body}});
 
         // Delete dependencies of deleted songs
-        if (songsToDelete) {
+        console.log(songsToDelete)
+        if (songsToDelete.length > 0) {
+            console.log("Hi");
             await deleteForeignKeys(songsToDelete);
         }
 
