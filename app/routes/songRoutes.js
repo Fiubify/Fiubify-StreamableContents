@@ -10,8 +10,6 @@ const {protectByAdminRole} = require("../middleware/authorizationMiddleware");
 router.get("/", songControllers.getAllSongsByQuery);
 router.post("/", validateReqBody(songInputSchema), songControllers.createSong);
 router.get("/:id", songControllers.getSongById);
-router.patch("/:id/block", songControllers.blockSong);
-router.patch("/:id/unblock", songControllers.unblockSong);
 
 if (process.env.NODE_ENV === "DEV") {
     router.patch("/:id/block", songControllers.blockSong);
