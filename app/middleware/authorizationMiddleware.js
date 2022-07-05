@@ -40,6 +40,30 @@ const validateMultipleUsersWithToken = async (token, arrayOfownersId) => {
     return response
 }
 
+const validateUserIsAdmin = async (token) => {
+    const response = await axios.post(InternalServicesUrls.adminAuthUrl, {
+        token: token
+    });
+
+    return response;
+}
+
+const protectByAdminRole = async (req, res, next) => {
+    try {
+        const {token} = req.body;
+
+        const validation = await validateUserIsAdmin(token);
+        if (validation.status !== 200) {
+            next(ApiError.forbiddenError(`User isn't an admin`))
+        } else {
+            next();
+        }
+    } catch (error) {
+        console.log(error);
+        next(ApiError.internalError('Error when auth admin'))
+    }
+}
+
 const protectUrlByUid = async (req, res, next) => {
     try {
         const uid = req.params.uid;
@@ -128,6 +152,7 @@ const protectUrlByPlaylistOwner = async (req, res, next) => {
 
 module.exports = {
     protectUrlByUid,
+    protectByAdminRole,
     protectUrlBySongOwner,
     protectUrlByAlbumOwner,
     protectUrlByPlaylistOwner
