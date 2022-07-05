@@ -153,11 +153,10 @@ const editAlbum = async (req, res, next) => {
         if (bodyTracks) {
             const albumSongsId = albumToEdit.tracks.map((track) => track._id.toString());
             songsToDelete = albumSongsId.filter(x => !bodyTracks.includes(x));
-            console.log(`Songs to delete ${songsToDelete}`);
         }
 
         // Update to the album values
-        //await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
+        await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
         delete req.body.tracks;
         delete req.body.token;
         await Album.updateOne({"_id": albumId}, {$set: {...req.body}});
@@ -166,7 +165,7 @@ const editAlbum = async (req, res, next) => {
         console.log(songsToDelete)
         if (songsToDelete.length > 0) {
             console.log("Hi");
-            //await deleteForeignKeys(songsToDelete);
+            await deleteForeignKeys(songsToDelete);
         }
 
         res.status(204).send({})
