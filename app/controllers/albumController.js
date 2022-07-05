@@ -134,13 +134,11 @@ const editAlbum = async (req, res, next) => {
     const albumId = req.params.id;
 
     try {
-
         if (res.missingFieldsInBody.length > 0) {
             next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
             return;
         }
 
-        const {bodyTracks} = req.body;
         const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
@@ -148,23 +146,9 @@ const editAlbum = async (req, res, next) => {
             return;
         }
 
-        // Update to the albums tracks
-        let songsToDelete = [];
-        if (bodyTracks) {
-            const albumSongsId = albumToEdit.tracks.map((track) => track._id.toString());
-            songsToDelete = albumSongsId.filter(x => !bodyTracks.includes(x));
-        }
-
-        // Update to the album values
-        await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
         delete req.body.tracks;
         delete req.body.token;
         await Album.updateOne({"_id": albumId}, {$set: {...req.body}});
-
-        // Delete dependencies of deleted songs
-        if (songsToDelete.length > 0) {
-            await deleteForeignKeys(songsToDelete);
-        }
 
         res.status(204).send({})
     } catch (err) {
