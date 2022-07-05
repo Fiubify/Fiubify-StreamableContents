@@ -142,7 +142,7 @@ const editAlbum = async (req, res, next) => {
 
         const {tracks} = req.body;
 
-        const albumToEdit = await Album.findOne({"id": albumId});
+        const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
             next(ApiError.resourceNotFound(`Album with ${albumId} not found`))
