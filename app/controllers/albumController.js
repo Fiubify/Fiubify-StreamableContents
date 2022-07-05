@@ -153,12 +153,15 @@ const editAlbum = async (req, res, next) => {
         if (bodyTracks) {
             const albumSongsId = albumToEdit.tracks.map((track) => track._id.toString());
             songsToDelete = albumSongsId.filter(x => !bodyTracks.includes(x));
+
+            // Update to the album values
+            console.log("1");
+            await Album.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
+            delete req.body.tracks;
         }
 
-        // Update to the album values
-        await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
-        delete req.body.tracks;
         delete req.body.token;
+        console.log("2");
         await Album.updateOne({"_id": albumId}, {$set: {...req.body}});
 
         // Delete dependencies of deleted songs
