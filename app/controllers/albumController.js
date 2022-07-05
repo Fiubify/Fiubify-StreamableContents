@@ -141,7 +141,6 @@ const editAlbum = async (req, res, next) => {
         }
 
         const {tracks} = req.body;
-
         const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
@@ -153,7 +152,7 @@ const editAlbum = async (req, res, next) => {
         let songsToDelete = [];
         if (tracks) {
             const albumSongsId = albumToEdit.tracks.map((track) => track._id);
-            songsToDelete = albumSongsId.filter(x => tracks.includes(x));
+            songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
             albumToEdit.tracks.map((song) => {
                 if (songsToDelete.includes(song._id)) {
                     song.remove();
