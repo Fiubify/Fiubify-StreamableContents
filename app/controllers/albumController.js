@@ -157,13 +157,13 @@ const editAlbum = async (req, res, next) => {
         }
 
         // Update to the album values
-        //await albumToEdit.updateOne({"id": albumId}, {$pullAll: {tracks: [{_id: songsToDelete}]}});
+        //await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
         delete req.body.tracks
-        await albumToEdit.updateOne({"id": albumId}, req.body);
+        await albumToEdit.updateOne({"_id": albumId}, req.body);
 
         // Delete dependencies of deleted songs
         console.log(songsToDelete)
-        if (songsToDelete) {
+        if (songsToDelete.length > 0) {
             console.log("Hi");
             //await deleteForeignKeys(songsToDelete);
         }
