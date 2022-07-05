@@ -140,8 +140,7 @@ const editAlbum = async (req, res, next) => {
             return;
         }
 
-        const {tracks} = req.body;
-        console.log(`Tracks ${tracks}`)
+        const {bodyTracks} = req.body;
         const albumToEdit = await Album.findOne({"id": albumId}).exec();
 
         if (albumToEdit === null) {
@@ -151,28 +150,23 @@ const editAlbum = async (req, res, next) => {
 
         // Update to the albums tracks
         let songsToDelete = [];
-        if (tracks) {
-            const albumSongsId = albumToEdit.tracks.map((track) => track._id);
-            console.log(`Songs in album ${albumSongsId}`);
-            songsToDelete = albumSongsId.filter(x => !tracks.includes(x));
-            //albumToEdit.tracks.map((song) => {
-            //    if (songsToDelete.includes(song._id)) {
-            //        song.remove();
-                }
-            //});
-
-            delete req.body.tracks;
+        if (bodyTracks) {
+            const albumSongsId = albumToEdit.tracks.map((track) => track._id.toString());
+            songsToDelete = albumSongsId.filter(x => !bodyTracks.includes(x));
+            console.log(`Songs to delete ${songsToDelete}`);
         }
 
         // Update to the album values
-        await Album.updateOne({"id": albumId}, req.body);
+        //await albumToEdit.updateOne({"id": albumId}, {$pullAll: {tracks: [{_id: songsToDelete}]}});
+        delete req.body.tracks
+        await albumToEdit.updateOne({"id": albumId}, req.body);
 
         // Delete dependencies of deleted songs
-        //console.log(songsToDelete)
-        //if (songsToDelete.length > 0) {
-        //    console.log("Hi");
-            // await deleteForeignKeys(songsToDelete);
-        //}
+        console.log(songsToDelete)
+        if (songsToDelete) {
+            console.log("Hi");
+            //await deleteForeignKeys(songsToDelete);
+        }
 
         res.status(204).send({})
     } catch (err) {
