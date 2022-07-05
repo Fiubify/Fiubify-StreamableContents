@@ -158,8 +158,9 @@ const editAlbum = async (req, res, next) => {
 
         // Update to the album values
         //await albumToEdit.updateOne({"_id": albumId}, {$pullAll: {tracks: songsToDelete}});
-        delete req.body.tracks
-        await albumToEdit.updateOne({"_id": albumId}, req.body);
+        delete req.body.tracks;
+        delete req.body.token;
+        await albumToEdit.updateOne({"_id": albumId}, {$set: {...req.body}});
 
         // Delete dependencies of deleted songs
         console.log(songsToDelete)
