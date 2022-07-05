@@ -173,7 +173,6 @@ describe("POST /albums/:id/add-song", () => {
         expect(response.status).toEqual(201);
 
         const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
-        console.log(updatedAlbumResponse.body.data.tracks);
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(1);
     })
 
@@ -188,3 +187,30 @@ describe("POST /albums/:id/add-song", () => {
         expect(updatedAlbumResponse.body.data.tracks).toHaveLength(0);
     })
 });
+
+describe("PUT /albums/:id", () => {
+    it("Update properties of album but no track changes", async () => {
+        const newAlbumContent = {"genre": "testGenre", "description": "testDescription"}
+        const response = await request(app).put(`/albums/${testingAlbumsId[0]}`).send(newAlbumContent);
+
+        expect(response.status).toEqual(204);
+
+        const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
+        expect(updatedAlbumResponse.body.data.description).toEqual(undefined);
+        expect(updatedAlbumResponse.body.data.genre).toEqual(newAlbumContent.genre);
+    });
+
+    it("Updates tracks of the album", async () => {
+        let testingSongDataWithoutField = Object.assign(testingSongData);
+        testingSongDataWithoutField.duration = undefined;
+        await request(app).post(`/albums/${testingAlbumsId[0]}/add-song`).send(testingSongDataWithoutField);
+
+        const newAlbumContent = {"tracks": []};
+        const response = await request(app).put(`/albums/${testingAlbumsId[0]}`).send(newAlbumContent);
+
+        expect(response.status).toEqual(204);
+
+        const updatedAlbumResponse = await request(app).get(`/albums/${testingAlbumsId[0]}`);
+        expect(updatedAlbumResponse.body.data.tracks).toHaveLength(0);
+    })
+})

@@ -205,3 +205,23 @@ describe("POST /songs/", () => {
     })
 });
 
+describe("PATCH /songs/:id/block", () => {
+    it("Check it blocks the correct song", async () => {
+        const response = await request(app).patch(`/songs/${testingSongsId[0]}/block`);
+        expect(response.status).toEqual(204);
+
+        const blockedSong = await request(app).get(`/songs/${testingSongsId[0]}`);
+        expect(blockedSong.body.data.disabled).toEqual(true);
+    })
+})
+
+describe("PATCH /songs/:id/unblock", () => {
+    it("Check it unblocks the corret song", async () => {
+        await request(app).patch(`/songs/${testingSongsId[0]}/block`);
+        const response = await request(app).patch(`/songs/${testingSongsId[0]}/unblock`);
+        expect(response.status).toEqual(204);
+
+        const blockedSong = await request(app).get(`/songs/${testingSongsId[0]}`);
+        expect(blockedSong.body.data.disabled).toEqual(false);
+    })
+})
