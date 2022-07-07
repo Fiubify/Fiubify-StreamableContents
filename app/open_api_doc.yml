@@ -1,0 +1,861 @@
+openapi: 3.0.3
+info:
+  title: Fiubify Streamable Content
+  description: Management of songs, albums, playlists and favourite content
+  version: 1.0.0-oas3
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SERVICESMANAGERWEB/StreamableContent/1.0.0-oas3
+  - url: https://fiubify-streamable-staging.herokuapp.com/
+components:
+  schemas:
+    Song:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        artistId:
+          description: Mongoose objectId thet refer a User
+        albumId:
+          $ref: '#/components/schemas/Album'
+        duration:
+          type: integer
+        url:
+          type: string
+          uniqueItems: true
+        tier:
+          type: string
+          default: Free
+        genre:
+          type: string
+        description:
+          type: string
+        disabled:
+          type: boolean
+          default: false
+
+      required:
+        - title
+        - artistId
+        - albumId
+        - duration
+        - url
+        - tier
+        - genre
+
+      example:
+        title: El farsante
+        artistId: 507f1f77bcf86cd799439011
+        albumId: 507f1f77bcf86cd799439012
+        duration: 100
+        url: ./1
+        tier: Free
+        genre: Reggeaton
+        description: Temazo
+        disabled: false
+
+    Album:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        artistId:
+          description: Mongoose objectId thet refer a User
+        tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Song'
+        tier:
+          type: string
+          default: Free
+        genre:
+          type: string
+
+      required:
+        - title
+        - artistId
+        - tier
+        - genre
+
+      example:
+        title: Odisea
+        tracks:
+          title: El farsante,
+          artistId: 507f1f77bcf86cd799439011,
+          albumId: 507f1f77bcf86cd799439012,
+          duration: 100,
+          url: ./1,
+          tier: Free,
+          genre: Reggeaton,
+          description: Temazo,
+          disabled: false
+        artistId: 507f1f77bcf86cd799439011
+        tier: Free
+        genre: Folklore
+
+    Favourite:
+      type: object
+      properties:
+        _id:
+          type: string
+        uid:
+          type: string
+          uniqueItems: true
+        tracks:
+          type: array
+          items:
+            type: string
+            description: Song's mongoose objectId
+            default: []
+
+      required:
+        - uid
+        - tracks
+
+      example:
+        uid: 517f1f77bcf86cd799439011
+        tracks: [32875093nn1111]
+
+    Owner:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+          description: User's firebase uid
+      required:
+        - name
+
+      example:
+        name: Francisco Perez
+        id: 2342981jj119j
+
+    Playlist:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/Owner'
+        collaborative:
+          type: boolean
+          default: false
+        tracks:
+          type: array
+          items:
+            type: string
+            description: Song's mongoose id
+      required:
+        - title
+        - collaborative
+        - tracks
+
+      example:
+        title: Jazz playlist
+        description: My favorite jazz songs
+        owners: [
+          name: Francisco Perez,
+          id: 2342981jj119j
+        ]
+        collaborative: false,
+        tracks: [6647249842bjbk2100]
+  securitySchemes:
+    token:
+      in: header
+      type: apiKey
+      name: token
+      description: user's firebase token
+
+security:
+  - token: []
+
+paths:
+  songs/:
+    get:
+      description: Get all the songs matching your search criteria. The query can be for artistId, albumId, genre and tier (exact sensitive search) or for title (regex insensitive search)
+      parameters:
+        - name: title
+          in: query
+          description: Song`s title
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: Song`s genre
+          schema:
+            type: string
+        - name: tier
+          in: query
+          description: Song`s tier
+          schema:
+            type: string
+        - name: albumId
+          in: query
+          description: Album`s id
+          schema:
+            type: string
+        - name: artistId
+          in: query
+          description: Song's artist mongoose id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List with all the songs matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '404':
+          description: No songs matching the search criteria
+        '500':
+          description: Internal error
+
+    post:
+      description: Create song with the info passed by query.
+      parameters:
+        - name: title
+          in: query
+          description: Song`s title
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: Song`s genre
+          schema:
+            type: string
+        - name: tier
+          in: query
+          description: Song`s tier
+          schema:
+            type: string
+        - name: albumId
+          in: query
+          description: Album`s id
+          schema:
+            type: string
+        - name: artistId
+          in: query
+          description: Song's artist mongoose id
+          schema:
+            type: string
+        - name: duration
+          in: query
+          description: Song's duration in seconds
+          schema:
+            type: number
+        - name: url
+          in: query
+          description: Song's archive location
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: Song's description
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created new song and returned via {response.data}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '400':
+          description: Invalid arguments
+
+  songs/:id:
+    get:
+      description: Get song with specified id
+      parameters:
+        - name: id
+          in: query
+          description: Song's mongoose id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the song schema (without id) for the specified id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Song with id ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  songs/:id/block:
+    patch:
+      description: Block user with id provided by params. Only Admin users can block content.
+      parameters:
+        - name: id
+          in: query
+          description: Song's mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Blocked song with ${id}
+        '403':
+          description: User isn't an admin
+        '404':
+          description: Song with id ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  songs/:id/unblock:
+    patch:
+      description: Unblock user with id provided by params. Only Admin users can unblock content.
+      parameters:
+        - name: id
+          in: query
+          description: Song's mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Unblocked song with ${id}
+        '403':
+          description: User isn't an admin
+        '404':
+          description: Song with id ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  albums/:
+    get:
+      description: Get all the albums matching your search criteria. The query can be for artistId, genre and tier (exact sensitive search) or for title (regex insensitive search)
+      parameters:
+        - name: title
+          in: query
+          description: Album`s title
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: Album`s genre
+          schema:
+            type: string
+        - name: tier
+          in: query
+          description: Album`s tier
+          schema:
+            type: string
+        - name: artistId
+          in: query
+          description: Album's artist mongoose id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List with all the albums matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+        '404':
+          description: No albums matching the search criteria
+        '500':
+          description: Internal error
+
+    post:
+      description: Create album with the info passed by query.
+      parameters:
+        - name: title
+          in: query
+          description: Song`s title
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: Song`s genre
+          schema:
+            type: string
+        - name: tier
+          in: query
+          description: Song`s tier
+          schema:
+            type: string
+        - name: artistId
+          in: query
+          description: Song's artist mongoose id
+          schema:
+            type: string
+
+      responses:
+        '201':
+          description: Created new song and returned via {response.data}
+        '400':
+          description: Invalid arguments
+
+  albums/:id:
+    get:
+      description: Get album with specified id
+      parameters:
+        - name: id
+          in: query
+          description: Album's mongoose id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the song schema (without id) for the specified id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '404':
+          description: Album with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+    put:
+      description: Edit album. Only album's artist owner can edit an album.
+      parameters:
+        - name: id
+          in: query
+          description: Album`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+        - name: title
+          in: query
+          description: Album`s title
+          schema:
+            type: string
+        - name: genre
+          in: query
+          description: Album`s genre
+          schema:
+            type: string
+        - name: tier
+          in: query
+          description: Album`s tier
+          schema:
+            type: string
+        - name: tracks
+          in: query
+          description: Album's tracks id
+          schema:
+            type: array
+            items:
+              type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Returns the song schema (without id) for the specified id
+        '400':
+          description: Invalid arguments
+        '403':
+          description: User token doesn't belong to sent uid
+        '404':
+          description: Album with ${id} not found
+        '500':
+          description: Internal error
+
+    delete:
+      description: Delete album with its tracks. Only album's artist owner can delete an album.
+      parameters:
+        - name: id
+          in: query
+          description: Album`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Returns the song schema (without id) for the specified id
+        '400':
+          description: Invalid uid passed
+        '403':
+          description: User token doesn't belong to sent uid
+        '404':
+          description: Album with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  albums/:id/add-song:
+    post:
+      description: Create a song and added to the album. Only album's artist owner can delete an album.
+      parameters:
+        - name: id
+          in: query
+          description: Album`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+        - name: title
+          in: body
+          description: Song's title
+          schema:
+            type: string
+        - name: artistId
+          in: body
+          description: Song's artistId
+          schema:
+            type: string
+        - name: genre
+          in: body
+          description: Song`s genre
+          schema:
+            type: string
+        - name: tier
+          in: body
+          description: Song`s tier
+          schema:
+            type: string
+        - name: duration
+          in: body
+          description: Song's duration in seconds
+          schema:
+            type: number
+        - name: url
+          in: body
+          description: Song's archive location
+          schema:
+            type: string
+        - name: description
+          in: body
+          description: Song's description
+          schema:
+            type: string
+
+      security:
+        - token: []
+      responses:
+        '201':
+          description: Returns the song schema (without id) for the specified id
+        '400':
+          description: Invalid arguments
+        '403':
+          description: User token doesn't belong to sent uid
+        '404':
+          description: Album with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  playlists/:
+    get:
+      description: Get all the playlists matching your search criteria. The query can be for owner's id (exact sensitive search) or for title (regex insensitive search)
+      parameters:
+        - name: title
+          in: query
+          description: Album`s title
+          schema:
+            type: string
+        - name: artistId
+          in: query
+          description: Playlist's owner id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List with all the albums matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Playlist'
+        '404':
+          description: No playlists matching the search criteria
+        '500':
+          description: Internal error
+
+    post:
+      description: Create playlist with the info passed by query.
+      parameters:
+        - name: title
+          in: query
+          description: Playlist`s title
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: Playlist`s description
+          schema:
+            type: string
+        - name: owners
+          in: query
+          description: Playlists`s owners
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Owner'
+        - name: collaborative
+          in: query
+          description: Indicates if playlist is collaborative
+          schema:
+            type: boolean
+
+      responses:
+        '201':
+          description: Created new playlist
+        '400':
+          description: Invalid arguments passed
+
+  playlists/:id:
+    get:
+      description: Get playlist with specified id with the tracks populated.
+      parameters:
+        - name: id
+          in: query
+          description: Playlist's mongoose id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the playlist with the tracks populated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playlist'
+        '404':
+          description: Playlist with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  playlists/:id/add-track:
+    post:
+      description: Add a song to the playlist specified with id. Only playlist's owners can do this operation.
+      parameters:
+        - name: id
+          in: query
+          description: Playlist`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+        - name: trackId
+          in: body
+          description: Song's mongoose id
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Added song to playlist's tracks
+        '403':
+          description: User isn't owner of playlist with id:${playlistId}
+        '404':
+          description: Playlist with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  playlists/:id/edit:
+    post:
+      description: Edit playlist. Only playlist's owners can do this operation.
+      parameters:
+        - name: id
+          in: query
+          description: Album`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+        - name: title
+          in: body
+          description: Playlist's title
+          schema:
+            type: string
+        - name: description
+          in: body
+          description: Playlist's description
+          schema:
+            type: string
+        - name: collaborative
+          in: body
+          description: Indicates if playlist is collaborative
+          schema:
+            type: boolean
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Playlist edited successfully
+        '403':
+          description: User isn't owner of playlist with id:${playlistId}
+        '404':
+          description: Playlist with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  playlists/:id/remove-track:
+    post:
+      description: Remove a song from the playlist specified with id. Only playlist's owners can do this operation.
+      parameters:
+        - name: id
+          in: query
+          description: Playlist`s mongoose id
+          schema:
+            type: string
+        - name: token
+          in: body
+          description: User's firebase token
+          schema:
+            type: string
+        - name: trackId
+          in: body
+          description: Song's mongoose id
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Removed song from playlist's tracks
+        '403':
+          description: User isn't owner of playlist with id:${playlistId}
+        '404':
+          description: Playlist with ${id} doesn't exists
+        '500':
+          description: Internal error
+
+  favourites/:uid:
+    get:
+      description: Get favourites songs for the user with specified uid.
+      parameters:
+        - name: uid
+          in: query
+          description: Users`s firebase uid
+          schema:
+            type: string
+        - name: token
+          in: query
+          description: User's firebase token
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '200':
+          description: Returns favourites songs (array of song schemas) for user's uid.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+        '400':
+          description: Invalid uid passed
+        '403':
+          description: User token doesn't belong to sent uid
+        '500':
+          description: Internal error
+
+  favourites/:uid/add-song:
+    post:
+      description: Add song to favourites tracks of specified user's uid.
+      parameters:
+        - name: uid
+          in: query
+          description: Users`s firebase uid
+          schema:
+            type: string
+        - name: token
+          in: query
+          description: User's firebase token
+          schema:
+            type: string
+        - name: songId
+          in: body
+          description: Song's mongoose id
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '201':
+          description: Add song to user's favourite tracks
+        '400':
+          description: Invalid arguments
+        '403':
+          description: User token doesn't belong to sent uid
+        '500':
+          description: Internal error
+
+  favourites/:uid/remove-song:
+    delete:
+      description: Remove song from user's favourite tracks
+      parameters:
+        - name: uid
+          in: query
+          description: Users`s firebase uid
+          schema:
+            type: string
+        - name: token
+          in: query
+          description: User's firebase token
+          schema:
+            type: string
+        - name: songId
+          in: body
+          description: Song's mongoose id
+          schema:
+            type: string
+      security:
+        - token: []
+      responses:
+        '204':
+          description: Add song to user's favourite tracks
+        '400':
+          description: Invalid arguments
+        '403':
+          description: User token doesn't belong to sent uid
+        '500':
+          description: Internal error

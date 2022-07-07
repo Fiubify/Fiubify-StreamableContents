@@ -144,7 +144,7 @@ const protectUrlByPlaylistOwner = async (req, res, next) => {
 
     const usersValidationResult = await validateMultipleUsersWithToken(token, playlist.owners.map(owner => owner.id));
     if (usersValidationResult.status !== 200) {
-        ApiError.forbiddenError(`User isn't owner of album with id: ${playlistId}`).constructResponse(res);
+        ApiError.forbiddenError(`User isn't owner of playlist with id: ${playlistId}`).constructResponse(res);
     } else {
         next();
     }
