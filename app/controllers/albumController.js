@@ -38,7 +38,7 @@ const getAlbumById = async (req, res, next) => {
     try {
         const albumId = req.params.id;
 
-        const requestedAlbum = await Album.findById(albumId).select("-_id -__v");
+        const requestedAlbum = await Album.findById(albumId).select("-__v");
 
         if (requestedAlbum == null) {
             next(ApiError.resourceNotFound(`Album with id ${albumId} doesn't exists`));
