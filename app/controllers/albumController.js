@@ -113,7 +113,7 @@ const createSongAndAddToAlbum = async (req, res, next) => {
         requestedAlbum.tracks.push(newSongWithId);
         await requestedAlbum.save();
 
-        res.status(201).send({})
+        res.status(201).send({data: newSongWithId})
     } catch (err) {
         console.log(err)
         next(ApiError.invalidArguments("Invalid arguments passed"));
