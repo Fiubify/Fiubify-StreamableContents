@@ -84,6 +84,8 @@ const createAlbum = async (req, res, next) => {
 const createSongAndAddToAlbum = async (req, res, next) => {
     try {
         if (res.missingFieldsInBody.length > 0) {
+            console.log(res.missingFieldsInBody)
+            console.log("ACA")
             next(ApiError.missingFieldsInBody(res.missingFieldsInBody));
             return;
         }
