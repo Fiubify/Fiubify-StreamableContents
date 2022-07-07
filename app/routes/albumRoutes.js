@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === "DEV") {
     router.delete("/:id", albumControllers.deleteAlbum);
 } else {
     router.post("/", validateReqBody(albumInputSchema), albumControllers.createAlbum);
-    router.post("/:id/add-song", protectUrlByAlbumOwner, validateReqBody(songIntoAlbumInputSchema), albumControllers.createSongAndAddToAlbum);
+    router.post("/:id/add-song", validateReqBody(songIntoAlbumInputSchema), albumControllers.createSongAndAddToAlbum);
     router.put("/:id/", protectUrlByAlbumOwner, validateReqBody(albumEditSchema), albumControllers.editAlbum);
     router.delete("/:id", protectUrlByAlbumOwner, albumControllers.deleteAlbum);
 }
